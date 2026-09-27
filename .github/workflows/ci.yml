@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  enforce-hermes-content-paths:
+    name: Enforce Hermes full-diff content boundary
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out complete repository history
+        uses: actions/checkout@v4
+        with:
+          # The production baseline can predate the default one-commit checkout.
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Verify Hermes identity and full diff from production
+        env:
+          EXPECTED_HERMES_ACTOR: ${{ vars.HERMES_GITHUB_LOGIN }}
+          EXPECTED_HERMES_AUTHOR_EMAIL: ${{ vars.HERMES_GIT_AUTHOR_EMAIL }}
+        run: >-
+          node scripts/validate-hermes-changes.mjs
+          --repo .
+          --candidate "${{ github.sha }}"
+          --promoted-ref refs/tags/production
+          --expected-actor "$EXPECTED_HERMES_ACTOR"
+          --actual-actor "${{ github.actor }}"
+          --expected-author-email "$EXPECTED_HERMES_AUTHOR_EMAIL"
+
+  validate:
+    name: Validate content, routes, accessibility, structured data, and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run CI validation suite
+        run: npm run ci:validate

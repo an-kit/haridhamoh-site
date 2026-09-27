@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["zeffyDonationUrl", "whatsappCommunityUrl"],
+  "properties": {
+    "zeffyDonationUrl": { "type": "string", "format": "uri" },
+    "whatsappCommunityUrl": { "type": "string", "format": "uri" }
+  }
+}
