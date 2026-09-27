@@ -27,30 +27,42 @@ The site SHALL use Motion as its only animation library and SHALL NOT use Aceter
 - **THEN** that imagery has no animation, parallax, transform-on-scroll, or hover-motion effect
 
 ### Requirement: Static map and directions treatment
-The Contact experience SHALL use a static map image and a Google Maps directions link for the approved address. The site SHALL NOT load an interactive map library or embedded interactive map as a dependency of this experience.
+The Contact experience SHALL use a static map image and a Google Maps directions link for the approved site-facts content record address. The site SHALL NOT load an interactive map library or embedded interactive map as a dependency of this experience.
 
 #### Scenario: Visitor requests directions
 - **WHEN** a visitor activates the directions link near the static map
-- **THEN** Google Maps opens with directions for 4755 Jeannette Rd, Hilliard, OH 43026
+- **THEN** Google Maps opens with directions for the approved site-facts content record address
 
 ### Requirement: Mobile performance budgets
-For a production-equivalent mobile assessment, the site SHALL achieve Lighthouse scores of at least 95 in Performance, Accessibility, Best Practices, and SEO; SHALL achieve LCP below 2 seconds on the agreed 4G test profile; and SHALL keep shipped client JavaScript below 150 KB. A release that does not meet any budget SHALL not be eligible for production promotion until the exception is explicitly approved in a later change.
+For a production-equivalent mobile assessment, the site SHALL achieve Lighthouse scores of at least 95 in Performance, Accessibility, Best Practices, and SEO and SHALL achieve LCP below 2 seconds on the agreed 4G test profile. The 150 KB shipped-client-JavaScript target remains aspirational for any future stack change. For this Next.js App Router implementation only, the approved release exception is 175,000 gzip bytes: the measured framework floor is 170,326 gzip bytes, with 4,674 bytes of normal content-growth headroom. This exception supersedes the original 150 KB target for this implementation. A release that does not meet its applicable budget SHALL not be eligible for production promotion until an exception is explicitly approved in a later change.
 
 #### Scenario: Release candidate passes quality assessment
 - **WHEN** the staging release is tested using the documented mobile profile
-- **THEN** all four Lighthouse categories are at least 95, LCP is below 2 seconds on 4G, and shipped client JavaScript is below 150 KB
+- **THEN** all four Lighthouse categories are at least 95, LCP is below 2 seconds on 4G, and shipped client JavaScript meets its applicable budget
+
+#### Scenario: Current Next.js App Router release uses the approved exception
+- **WHEN** this Next.js App Router implementation is assessed for shipped client JavaScript
+- **THEN** it may use the approved 175,000 gzip-byte release budget, derived from the measured 170,326 gzip-byte framework floor plus 4,674 bytes of normal content-growth headroom
 
 #### Scenario: Release candidate exceeds a budget
-- **WHEN** a staging release misses a Lighthouse, LCP, or JavaScript budget
+- **WHEN** a staging release misses a Lighthouse, LCP, or applicable JavaScript budget
 - **THEN** it is reported as blocked and is not promoted under this change
 
 ### Requirement: Place and event structured data
-The site SHALL emit schema.org `PlaceOfWorship` structured data that includes the approved address and opening hours. Each public event detail page SHALL emit schema.org `Event` structured data reflecting its repository event record.
+The site SHALL emit schema.org `PlaceOfWorship` structured data from the approved site-facts content record, including its address and opening hours. Each public event detail page SHALL emit schema.org `Event` structured data reflecting its repository event record. Event JSON-LD SHALL serialize start and end date-times as ISO 8601 values with the correct `America/New_York` UTC offset; a multi-day event SHALL use its `endDate` for the end date-time. When an event's end time is not reliably known (for example, an approximate or open-ended end), Event JSON-LD MAY omit `endDate` rather than assert a fabricated one.
 
 #### Scenario: Crawler inspects organization structured data
 - **WHEN** a crawler reads the site structured data
-- **THEN** it finds a `PlaceOfWorship` object with the approved address and daily darshan opening hours
+- **THEN** it finds a `PlaceOfWorship` object whose address and opening hours match the approved site-facts content record
 
-#### Scenario: Crawler inspects an event detail page
-- **WHEN** a crawler reads an event detail page structured data
-- **THEN** it finds an `Event` object matching the event title, date/time, location, image, and description
+#### Scenario: Crawler inspects a single-day event detail page
+- **WHEN** a crawler reads a single-day event detail page structured data
+- **THEN** it finds an `Event` object with ISO 8601 start and end date-times using the correct America/New_York UTC offset
+
+#### Scenario: Crawler inspects a multi-day event detail page
+- **WHEN** a crawler reads a multi-day event detail page structured data
+- **THEN** it finds an `Event` object whose end date-time uses `endDate` and the correct America/New_York UTC offset
+
+#### Scenario: Crawler inspects an event with an approximate or open-ended end time
+- **WHEN** a crawler reads structured data for an event whose end time is not reliably known
+- **THEN** the `Event` object MAY omit `endDate` rather than asserting a fabricated end date-time

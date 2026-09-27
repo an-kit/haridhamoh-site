@@ -1,15 +1,15 @@
 ## Purpose
 
-Define the English-only public experience for HSAPSS Ohio (Haridham Ohio) and preserve its distinct organizational identity, accurate location information, and approved public actions.
+Define the English-only public experience for HSAPSS Ohio (Haridham Ohio) and preserve its distinct organizational identity, approved site facts, and public actions.
 
 ## ADDED Requirements
 
-### Requirement: HSAPSS Ohio identity and facts
-The site SHALL identify the organization as HSAPSS Ohio / Haridham Ohio and SHALL NOT describe, brand, or imply that it is BAPS. All ported and newly written visible copy SHALL preserve this distinction. The site SHALL display the address `4755 Jeannette Rd, Hilliard, OH 43026`, telephone number `614.512.2761`, and darshan hours `Sun–Sat 8AM–1PM, 4PM–9PM` where public contact or visit information is presented. The site SHALL use `Sokhada` and `Hariprasad Swamiji` when those names occur.
+### Requirement: HSAPSS Ohio identity and approved site facts
+The site SHALL identify the organization as HSAPSS Ohio / Haridham Ohio and SHALL NOT describe, brand, or imply that it is BAPS. All ported and newly written visible copy SHALL preserve this distinction. The site SHALL render address, telephone number, and darshan hours from the approved site-facts content record where public contact or visit information is presented. The site SHALL use `Sokhada` and `Hariprasad Swamiji` when those names occur.
 
 #### Scenario: Visitor views contact information
 - **WHEN** a visitor opens the Contact page or a global contact surface
-- **THEN** the address, phone number, and darshan hours match the approved facts exactly
+- **THEN** the address, phone number, and darshan hours match the approved site-facts content record
 
 #### Scenario: Visitor encounters organization identity
 - **WHEN** a visitor reads a page title, navigation label, footer, or organization description
@@ -29,6 +29,17 @@ The site SHALL provide navigable public routes for Home, About, Upasana, Events,
 #### Scenario: Visitor opens an event
 - **WHEN** a visitor selects an event from the Events list
 - **THEN** the site opens a distinct page for that event
+
+### Requirement: Home upcoming-event presentation
+The Home page SHALL use the inline event-lifecycle behavior to show the next upcoming events in America/New_York. When no upcoming events remain at view time, the Home page SHALL omit the event section without displaying a `no upcoming events` message.
+
+#### Scenario: Upcoming events exist
+- **WHEN** one or more events are upcoming in America/New_York at view time
+- **THEN** the Home page shows the next upcoming events
+
+#### Scenario: No upcoming events exist
+- **WHEN** no event is upcoming in America/New_York at view time
+- **THEN** the Home page omits the event section and does not render a `no upcoming events` message
 
 ### Requirement: Centers and outbound community actions
 The Centers page SHALL link to the existing approved external center destinations for Vadodara, India; New Jersey; Maryland; and Chicago. The site SHALL provide the approved WhatsApp community join link. External destinations SHALL be distinguishable from internal navigation.
