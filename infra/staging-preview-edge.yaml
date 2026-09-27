@@ -1,0 +1,116 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: DNS-independent private-S3 CloudFront preview for Haridham Ohio staging.
+
+Parameters:
+  ReleaseSha:
+    Type: String
+    Default: dcf8f08ba53381eed3d9d3594bb8757e7ab0d857
+    AllowedPattern: "^[0-9a-f]{40}$"
+    Description: Immutable Git SHA prefix served by this staging preview distribution.
+
+Resources:
+  StagingOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: haridhamoh-site-staging-oac
+        Description: OAC for the private Haridham Ohio staging S3 origin.
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  StagingUriRewriteFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: haridhamoh-site-staging-uri-rewrite
+      AutoPublish: true
+      FunctionConfig:
+        Comment: Rewrite Next.js trailing-slash routes to static index.html objects.
+        Runtime: cloudfront-js-2.0
+      FunctionCode: |
+        function handler(event) {
+          var request = event.request;
+          var uri = request.uri;
+
+          if (uri.endsWith('/')) {
+            request.uri = uri + 'index.html';
+          } else if (!uri.includes('.')) {
+            request.uri = uri + '/index.html';
+          }
+
+          return request;
+        }
+      Tags:
+        - Key: Project
+          Value: haridhamoh-site
+        - Key: Repository
+          Value: an-kit/haridhamoh-site
+        - Key: ManagedBy
+          Value: cloudformation
+        - Key: Environment
+          Value: staging
+
+  StagingPreviewDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: Haridham Ohio staging preview using the default CloudFront domain only.
+        Enabled: true
+        DefaultRootObject: index.html
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ErrorCachingMinTTL: 0
+            ResponseCode: 404
+            ResponsePagePath: /404.html
+          - ErrorCode: 404
+            ErrorCachingMinTTL: 0
+            ResponseCode: 404
+            ResponsePagePath: /404.html
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt StagingUriRewriteFunction.FunctionARN
+          TargetOriginId: StagingPrivateS3Origin
+          ViewerProtocolPolicy: redirect-to-https
+        Origins:
+          - DomainName: haridhamoh-site-staging-392340646785-us-east-2.s3.us-east-2.amazonaws.com
+            Id: StagingPrivateS3Origin
+            OriginAccessControlId: !GetAtt StagingOriginAccessControl.Id
+            OriginPath: !Sub "/releases/${ReleaseSha}"
+            S3OriginConfig: {}
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+      Tags:
+        - Key: Project
+          Value: haridhamoh-site
+        - Key: Repository
+          Value: an-kit/haridhamoh-site
+        - Key: ManagedBy
+          Value: cloudformation
+        - Key: Environment
+          Value: staging
+
+Outputs:
+  DistributionId:
+    Description: Staging preview CloudFront distribution ID.
+    Value: !Ref StagingPreviewDistribution
+  DistributionDomainName:
+    Description: Public default CloudFront domain for staging preview.
+    Value: !GetAtt StagingPreviewDistribution.DomainName
+  DistributionArn:
+    Description: Distribution ARN for the staging S3 bucket policy update.
+    Value: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${StagingPreviewDistribution}"
+  OriginAccessControlId:
+    Description: OAC ID attached to the staging distribution.
+    Value: !GetAtt StagingOriginAccessControl.Id

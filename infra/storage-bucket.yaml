@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Private versioned S3 origin bucket for one Haridham Ohio environment.
+
+Parameters:
+  BucketName:
+    Type: String
+    AllowedPattern: "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
+    Description: Globally unique S3 bucket name.
+  Environment:
+    Type: String
+    AllowedValues:
+      - staging
+      - production
+  CloudFrontDistributionArn:
+    Type: String
+    Default: ""
+    Description: Approved CloudFront distribution ARN allowed to read this private bucket through OAC.
+
+Conditions:
+  HasCloudFrontDistributionArn: !Not [!Equals [!Ref CloudFrontDistributionArn, ""]]
+
+Resources:
+  SiteOriginBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref BucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireNoncurrentVersionsAfter90Days
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 90
+      ObjectLockEnabled: true
+      ObjectLockConfiguration:
+        ObjectLockEnabled: Enabled
+        Rule:
+          DefaultRetention:
+            Mode: GOVERNANCE
+            Days: 30
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Project
+          Value: haridhamoh-site
+        - Key: Repository
+          Value: an-kit/haridhamoh-site
+        - Key: ManagedBy
+          Value: cloudformation
+        - Key: Environment
+          Value: !Ref Environment
+      VersioningConfiguration:
+        Status: Enabled
+
+  SiteOriginBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Condition: HasCloudFrontDistributionArn
+    Properties:
+      Bucket: !Ref SiteOriginBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowReadOnlyFromApprovedCloudFrontDistribution
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${SiteOriginBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Ref CloudFrontDistributionArn
+
+Outputs:
+  BucketName:
+    Description: Private origin bucket name.
+    Value: !Ref SiteOriginBucket
+  BucketArn:
+    Description: Private origin bucket ARN.
+    Value: !GetAtt SiteOriginBucket.Arn
+  BucketRegionalDomainName:
+    Description: Regional REST-origin domain for future CloudFront OAC configuration.
+    Value: !GetAtt SiteOriginBucket.RegionalDomainName

@@ -23,10 +23,26 @@ export default function HomePage() {
               <Button asChild variant="outline"><a href={actions.whatsappCommunityUrl} target="_blank" rel="noreferrer">Join WhatsApp community</a></Button>
             </div>
           </div>
-          <aside className="rounded-2xl bg-cream p-6 text-slate">
-            <h2 className="font-display text-3xl">Darshan</h2>
-            <p className="mt-3 text-lg">{siteFacts.darshanHours}</p>
-            <p className="mt-6 text-sm">Phone: {siteFacts.phone}</p>
+          <aside className="overflow-hidden rounded-2xl bg-cream text-slate">
+            <picture>
+              <source media="(max-width: 640px)" srcSet="/assets/brand/haridham-ohio-home-hero-640.jpg" />
+              <source media="(min-width: 1280px)" srcSet="/assets/brand/haridham-ohio-home-hero-1280.jpg" />
+              <img
+                alt="Haridham Ohio guru and temple banner"
+                className="h-auto w-full"
+                decoding="async"
+                fetchPriority="high"
+                height={414}
+                sizes="(max-width: 767px) calc(100vw - 4rem), (min-width: 1280px) 400px, 33vw"
+                src="/assets/brand/haridham-ohio-home-hero-960.jpg"
+                width={960}
+              />
+            </picture>
+            <div className="p-6">
+              <h2 className="font-display text-3xl">Darshan</h2>
+              <p className="mt-3 text-lg">{siteFacts.darshanHours}</p>
+              <p className="mt-6 text-sm">Phone: {siteFacts.phone}</p>
+            </div>
           </aside>
       </section>
       {events.length > 0 ? <section className="mt-12" data-event-section><h2 className="font-display text-4xl text-slate">Events</h2><div className="mt-5"><EventCollection events={events} homeLimit={3} /></div></section> : null}

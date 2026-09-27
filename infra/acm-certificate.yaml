@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: DNS-validated ACM certificate for one Haridham Ohio delivery environment.
+
+Parameters:
+  DomainName:
+    Type: String
+    Description: Exact DNS name covered by this certificate.
+  Environment:
+    Type: String
+    AllowedValues:
+      - staging
+      - production
+
+Resources:
+  SiteCertificate:
+    Type: AWS::CertificateManager::Certificate
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      Tags:
+        - Key: Project
+          Value: haridhamoh-site
+        - Key: Repository
+          Value: an-kit/haridhamoh-site
+        - Key: ManagedBy
+          Value: cloudformation
+        - Key: Environment
+          Value: !Ref Environment
+
+Outputs:
+  CertificateArn:
+    Description: ACM certificate ARN.
+    Value: !Ref SiteCertificate

@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { ContactMap } from "@/components/contact-map";
 import { EventCollection } from "@/components/event-collection";
 import { SacredImage } from "@/components/sacred-image";
+import HomePage from "@/app/page";
 import { SiteHeader } from "@/components/site-header";
 import { loadSiteFacts } from "@/lib/content/schema";
 
@@ -32,6 +33,20 @@ describe("public site components", () => {
       "href",
       "/donate",
     );
+  });
+
+  it("renders the approved Haridham Ohio logo and responsive homepage hero", () => {
+    const header = render(<SiteHeader />);
+
+    expect(within(header.container).getByRole("img", { name: "Haridham Ohio logo" })).toHaveAttribute(
+      "src",
+      "/assets/brand/hsapss-logo-header-256.png",
+    );
+
+    render(<HomePage />);
+
+    expect(screen.getByRole("img", { name: "Haridham Ohio guru and temple banner" }))
+      .toHaveAttribute("src", "/assets/brand/haridham-ohio-home-hero-960.jpg");
   });
 
   it("uses a static map image and directions derived from site facts", () => {
