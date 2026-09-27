@@ -4,20 +4,24 @@ Define the non-destructive delivery, index-control, rollback, artifact-retention
 
 ## ADDED Requirements
 
-### Requirement: Dedicated-account static delivery design
-The implementation design SHALL target a fresh dedicated AWS account with private S3 origins, CloudFront Origin Access Control, and an ACM certificate in `us-east-1`. It SHALL define separate staging and production distributions, with staging at `new.haridhamoh.org` and production at `haridhamoh.org`. It SHALL NOT use S3 website hosting. GitHub Actions deployment design SHALL use OIDC with separately scoped staging and production roles and no long-lived AWS access keys. The production deploy role SHALL be assumable only from the GitHub Actions `production` environment. An AWS Budget alert SHALL be tested before the first deployment.
+### Requirement: Existing-account project-isolated static delivery design
+The implementation design SHALL use Ankit's existing AWS account `392340646785`, with isolation enforced by project tags and IAM boundaries rather than a second account. Every Haridham Ohio resource SHALL carry `Project=haridhamoh-site` consistently and remain distinct from kiosk resource tags. It SHALL use separate Haridham Ohio private S3 origins, CloudFront Origin Access Control, and ACM certificates in `us-east-1`; no S3 bucket or CloudFront distribution may be shared with kiosk. It SHALL define separate staging and production distributions, with staging at `new.haridhamoh.org` and production at `haridhamoh.org`. It SHALL NOT use S3 website hosting. GitHub Actions deployment design SHALL use OIDC with dedicated project-only staging and production roles, no long-lived AWS access keys, and no reuse of `sat-track-deploy` or any `kioskorder-*` role. The production deploy role SHALL be assumable only from the GitHub Actions `production` environment. A dedicated AWS Budget scoped to `Project=haridhamoh-site`, separate from kiosk budgeting, SHALL be tested before the first deployment.
 
-#### Scenario: Infrastructure design is reviewed
+#### Scenario: Existing-account infrastructure design is reviewed
 - **WHEN** an operator reviews the delivery design before implementation
-- **THEN** it specifies private S3, CloudFront OAC, ACM in `us-east-1`, two distributions, OIDC roles scoped by environment, a production role restricted to the `production` environment, and a tested budget alert
+- **THEN** it identifies account `392340646785`, requires `Project=haridhamoh-site` tags on every Haridham Ohio resource, specifies separate private S3 and CloudFront resources from kiosk, ACM in `us-east-1`, two distributions, dedicated project-only OIDC roles scoped by environment, a production role restricted to the `production` environment, and a tested tag-scoped budget separate from kiosk budgeting
+
+#### Scenario: Proposed project role reuses a kiosk role
+- **WHEN** a deployment plan proposes reuse of `sat-track-deploy` or any `kioskorder-*` role
+- **THEN** it is rejected and replaced with a dedicated project-only staging or production deploy role
+
+#### Scenario: Proposed hosting uses a public S3 website endpoint or shared kiosk origin
+- **WHEN** a hosting plan proposes S3 website hosting, a publicly reachable bucket origin, or sharing a bucket or CloudFront distribution with kiosk
+- **THEN** it is rejected as nonconforming
 
 #### Scenario: Production role is requested outside the production environment
 - **WHEN** a workflow outside the GitHub Actions `production` environment attempts to assume the production deploy role
 - **THEN** the role assumption is denied
-
-#### Scenario: Proposed hosting uses a public S3 website endpoint
-- **WHEN** a hosting plan proposes S3 website hosting or a publicly reachable bucket origin
-- **THEN** it is rejected as nonconforming
 
 ### Requirement: Durable commit-SHA artifact retention
 Built site artifacts SHALL be stored in S3 under keys that include their commit SHA. GitHub Actions artifacts SHALL NOT be the retained rollback source. The artifact store SHALL retain each production SHA eligible for rollback so it can be redeployed without rebuilding.

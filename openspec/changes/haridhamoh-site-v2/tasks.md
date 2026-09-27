@@ -46,12 +46,12 @@
 - [ ] 5.10 Implement environment-specific crawler controls; verify staging returns `X-Robots-Tag: noindex` and `robots.txt` with `Disallow: /`, while production does neither.
 - [ ] 5.11 Configure and version the mobile test profile; verify Lighthouse Performance, Accessibility, Best Practices, and SEO are each at least 95, LCP is below 2 seconds on the chosen 4G profile, and shipped client JavaScript including the event lifecycle script is below 150 KB.
 
-## 6. Design-only cloud preflight, then infrastructure implementation
+## 6. Existing-account cloud preflight, then project-isolated infrastructure implementation
 
-- [ ] 6.1 Before any AWS write, obtain explicit authorization for the dedicated-account implementation boundary and verify account identity, budget-alert delivery plan, production-environment role restriction, and rollback evidence requirements are recorded.
-- [ ] 6.2 Provision private S3 origins, CloudFront Origin Access Control, ACM certificates in `us-east-1`, and separate staging/production distributions; verify no S3 website hosting endpoint or public-bucket origin is used.
-- [ ] 6.3 Configure GitHub Actions OIDC with separately scoped staging and production roles; verify no long-lived AWS access keys exist in repository secrets, workflow configuration, or deployment environment.
-- [ ] 6.4 Create and test the AWS Budget alert before first deployment; verify alert delivery evidence is captured and reviewed.
+- [ ] 6.1 Before any AWS write, obtain explicit authorization for implementation in existing AWS account `392340646785`; verify the `Project=haridhamoh-site` tagging boundary, account identity, dedicated project-only IAM role plan, budget-alert delivery plan, production-environment role restriction, and rollback evidence requirements are recorded.
+- [ ] 6.2 Provision separately tagged private Haridham Ohio S3 origins, CloudFront Origin Access Control, ACM certificates in `us-east-1`, and separate staging/production distributions; verify every resource has `Project=haridhamoh-site`, no S3 bucket or distribution is shared with kiosk, and no S3 website hosting endpoint or public-bucket origin is used.
+- [ ] 6.3 Configure GitHub Actions OIDC with dedicated project-only staging and production roles; verify neither `sat-track-deploy` nor any `kioskorder-*` role is reused, the roles are separately scoped by environment, and no long-lived AWS access keys exist in repository secrets, workflow configuration, or deployment environment.
+- [ ] 6.4 Create and test a dedicated AWS Budget scoped to `Project=haridhamoh-site` before first deployment; verify it is separate from kiosk budgeting and alert delivery evidence is captured and reviewed.
 - [ ] 6.5 Map and verify `new.haridhamoh.org` only after Namecheap DNS preflight; verify the staging distribution serves the validated static artifact without changing mail or Google Workspace records.
 
 ## 7. Rollback, redirect discovery, and separate cutover change

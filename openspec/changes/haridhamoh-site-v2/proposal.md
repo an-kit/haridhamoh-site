@@ -25,4 +25,4 @@ Haridham Ohio currently relies on a WordPress/Elementor site on Namecheap hostin
 
 ## Impact
 
-This is specification and design work only. It establishes future requirements for a Next.js static export, content assets, GitHub Actions, a dedicated AWS account, CloudFront/S3, ACM, Namecheap DNS, Zeffy links, and a later read-only WordPress URL crawl. It creates no application code, cloud resources, DNS records, scraping jobs, redirects, or deployment automation.
+This is specification and design work only. It establishes future requirements for a Next.js static export, content assets, GitHub Actions, project-isolated delivery in Ankit's existing AWS account `392340646785`, CloudFront/S3, ACM, Namecheap DNS, Zeffy links, and a later read-only WordPress URL crawl. It creates no application code, cloud resources, DNS records, scraping jobs, redirects, or deployment automation.
