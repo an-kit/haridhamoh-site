@@ -13,7 +13,9 @@ permissions:
 jobs:
   enforce-hermes-content-paths:
     name: Enforce Hermes full-diff content boundary
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # This is the autonomous, bot-authored content-update lane only. Human-approved
+    # implementation pushes remain covered by the validate job below.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.actor == vars.HERMES_GITHUB_LOGIN
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
