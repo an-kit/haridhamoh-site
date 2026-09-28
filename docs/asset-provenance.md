@@ -2,6 +2,8 @@
 
 Generated: 2026-09-27
 
+Last authorization update: 2026-09-28
+
 ## Scope and method
 
 - This began as a read-only discovery inventory. On 2026-09-27, Ankit authorized a limited asset-intake exception: two direct-owner Haridham Ohio assets may be retained in the repository and four WordPress source files may be fetched only into local scratch space to create review thumbnails. The review-source files and thumbnails are not in the repository, are not deployed, and are not referenced by the site build.
@@ -28,11 +30,19 @@ Generated: 2026-09-27
 - Generated browser derivatives: `public/assets/brand/hsapss-logo-header-128.png`, `public/assets/brand/hsapss-logo-header-256.png`, and `app/icon.png` (favicon).
 - WordPress `HSAPSS-1.png` is superseded and prohibited from site use.
 
-### `WebSiteMainBanner.png` — homepage hero banner
+### `WebSiteMainBanner.png` — prior homepage hero banner
 - Source: **Ankit-provided direct upload, 2026-09-27**. **Confirmed Haridham Ohio asset, not HSAPSS Canada.**
 - Original master described by Ankit: 1900 × 820 PNG, RGB.
 - Repository intake copy actually received through Telegram: `assets/approved-brand-sources/WebSiteMainBanner.approved-direct-upload.received.jpg`, 1280 × 552 JPEG, 48,630 B, SHA-256 `abb4b23a698a66b0ee0dc0f51d5b0217bd9e030c755f6b98a3a19feb0b2dc1ab`. It is a rendered delivery copy, not a substitute claim for the 1900 × 820 PNG master.
 - Generated responsive browser derivatives: `public/assets/brand/haridham-ohio-home-hero-640.jpg`, `public/assets/brand/haridham-ohio-home-hero-960.jpg`, and `public/assets/brand/haridham-ohio-home-hero-1280.jpg`.
+- Status: superseded as the homepage hero by the explicitly approved DarshanTiming asset below; retained for the Guru Parampara banner.
+
+### `DarshanTiming.wordpress-haridhamoh.2026-09-28.png` — approved permanent homepage hero
+- Source: Haridham Ohio WordPress attachment: `https://haridhamoh.org/wp-content/uploads/2025/02/Screenshot-2025-02-05-at-5.45.20%E2%80%AFPM.png`.
+- Repository source: `assets/approved-brand-sources/DarshanTiming.wordpress-haridhamoh.2026-09-28.png`, 2562 × 860 PNG, 4,889,004 B.
+- Authorization: **Ankit explicitly approved this asset on 2026-09-28 as the permanent replacement for `WebSiteMainBanner` on the homepage.**
+- Generated responsive browser derivatives: `public/assets/brand/haridham-ohio-darshan-hero-mobile.jpg`, `public/assets/brand/haridham-ohio-darshan-hero-tablet.jpg`, and `public/assets/brand/haridham-ohio-darshan-hero-desktop.jpg`.
+- Deployment: homepage hero via `app/page.tsx`.
 
 ### Additional received logo rendition
 - `assets/approved-brand-sources/HSAPSSLogo.alternate-preview.received.jpg`, 500 × 529 JPEG, 42,207 B, SHA-256 `d00105f73e2aa2d014762770b1aab722a4eef346f3fc208dd0901e169c33c696`.
