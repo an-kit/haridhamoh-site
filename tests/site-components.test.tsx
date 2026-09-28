@@ -5,6 +5,7 @@ import { ContactMap } from "@/components/contact-map";
 import { EventCollection } from "@/components/event-collection";
 import { SacredImage } from "@/components/sacred-image";
 import HomePage from "@/app/page";
+import UpasanaPage from "@/app/upasana/page";
 import { SiteHeader } from "@/components/site-header";
 import { loadSiteFacts } from "@/lib/content/schema";
 
@@ -47,6 +48,22 @@ describe("public site components", () => {
 
     expect(screen.getByRole("img", { name: "Haridham Ohio darshan and temple" }))
       .toHaveAttribute("src", "/assets/brand/haridham-ohio-darshan-hero-desktop.jpg");
+  });
+
+  it("renders the Akshar Purushottam Siddhant doctrine and lineage link", () => {
+    render(<UpasanaPage />);
+
+    expect(screen.getByRole("heading", { level: 1, name: "Upasana" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: "Akshar Purushottam Siddhant" }))
+      .toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: "The Living Guru" }))
+      .toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: "What This Means in Practice" }))
+      .toBeInTheDocument();
+    expect(screen.getByText(/Upasana means the mode and understanding of worship/i))
+      .toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "See the full lineage" }))
+      .toHaveAttribute("href", "/guru-parampara/");
   });
 
   it("uses a static map image and directions derived from site facts", () => {
