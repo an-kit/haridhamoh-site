@@ -45,8 +45,8 @@ describe("public site components", () => {
 
     render(<HomePage />);
 
-    expect(screen.getByRole("img", { name: "Haridham Ohio guru and temple banner" }))
-      .toHaveAttribute("src", "/assets/brand/haridham-ohio-home-hero-960.jpg");
+    expect(screen.getByRole("img", { name: "Haridham Ohio darshan and temple" }))
+      .toHaveAttribute("src", "/assets/brand/haridham-ohio-darshan-hero-desktop.jpg");
   });
 
   it("uses a static map image and directions derived from site facts", () => {
