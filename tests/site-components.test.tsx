@@ -5,6 +5,7 @@ import { ContactMap } from "@/components/contact-map";
 import { EventCollection } from "@/components/event-collection";
 import { SacredImage } from "@/components/sacred-image";
 import HomePage from "@/app/page";
+import GuruParamparaPage from "@/app/guru-parampara/page";
 import UpasanaPage from "@/app/upasana/page";
 import { SiteHeader } from "@/components/site-header";
 import { loadSiteFacts } from "@/lib/content/schema";
@@ -64,6 +65,31 @@ describe("public site components", () => {
       .toBeInTheDocument();
     expect(screen.getByRole("link", { name: "See the full lineage" }))
       .toHaveAttribute("href", "/guru-parampara/");
+  });
+
+  it("renders the approved Guru Parampara biography sections and anchor navigation", () => {
+    render(<GuruParamparaPage />);
+
+    const lineage = [
+      ["Sahajanand Swami", "sahajanand-swami"],
+      ["Gunatitanand Swami", "gunatitanand-swami"],
+      ["Shastriji Maharaj", "shastriji-maharaj"],
+      ["Yogiji Maharaj", "yogiji-maharaj"],
+      ["H.H. Hariprasad Swamiji", "hariprasad-swamiji"],
+      ["H.H. Premswaroop Swami Maharaj", "premswaroop-swami-maharaj"],
+    ];
+
+    for (const [name, anchor] of lineage) {
+      expect(screen.getByRole("link", { name })).toHaveAttribute("href", `#${anchor}`);
+      expect(document.getElementById(anchor)).toHaveTextContent(name);
+    }
+
+    expect(screen.getAllByText("Life Work")).toHaveLength(6);
+    expect(screen.getByText(/Founded a distinct organization to preserve and propagate them/i))
+      .toBeInTheDocument();
+    expect(screen.getByText(/last guru in this lineage shared in common between BAPS and Haridham Sokhada/i))
+      .toBeInTheDocument();
+    expect(screen.getByText(/founder of the organization behind this website/i)).toBeInTheDocument();
   });
 
   it("uses a static map image and directions derived from site facts", () => {
