@@ -32,7 +32,7 @@ export function EventDetail({ event }: { event: Event }) {
       <p className="mt-4 text-slate">Sabha starts at {formatTime(event.startTime)}</p>
       <div className="mt-6 flex flex-wrap gap-4">
         <a className="inline-flex font-semibold text-slate underline" download={calendarFilename} href={calendarDataUrl}>Add to Calendar</a>
-        {event.zeffyUrl ? <a className="inline-flex font-semibold text-slate underline" href={event.zeffyUrl} rel="noreferrer" target="_blank">Event seva and tickets</a> : null}
+        {event.zeffyUrl ? <a className="inline-flex font-semibold text-slate underline" href={event.zeffyUrl} rel="noreferrer" target="_blank">Event Seva</a> : null}
       </div>
       <script dangerouslySetInnerHTML={{ __html: jsonLd }} type="application/ld+json" />
     </article>
