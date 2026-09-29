@@ -62,10 +62,10 @@ const gurus = [
     lifeWork: [
       "Trained and ordained under Shastriji Maharaj",
       "Traveled and taught widely, expanding the Akshar-Purushottam teachings to new regions and, for the first time, outside India",
-      "Initiated Hariprasad Swamiji (then Gopaldas) into sainthood in 1965",
+      "Initiated Hariprasad Swamiji (then Prabhudas) into sainthood in 1965",
       "Known within the tradition for emphasizing personal spiritual practice alongside community service",
     ],
-    bio: "Yogiji Maharaj continued the lineage from Shastriji Maharaj and is remembered for extending its reach considerably — both within India and, by the mid-20th century, to early followers abroad. In 1965 he initiated the young Gopaldas into sainthood as Hariprasad Swamiji, who would go on to found Haridham Sokhada / Yogi Divine Society in the early 1970s. Yogiji Maharaj is the last guru in this lineage shared in common between BAPS and Haridham Sokhada before that 1970s founding.",
+    bio: "Yogiji Maharaj continued the lineage from Shastriji Maharaj and is remembered for extending its reach considerably — both within India and, by the mid-20th century, to early followers abroad. In 1965 he initiated the young Prabhudas into sainthood as Hariprasad Swamiji, who would go on to found Haridham Sokhada / Yogi Divine Society in the early 1970s. Yogiji Maharaj is the last guru in this lineage shared in common between BAPS and Haridham Sokhada before that 1970s founding.",
   },
   {
     id: "hariprasad-swamiji",
@@ -73,7 +73,7 @@ const gurus = [
     title: "Founder, Haridham Sokhada / YDS",
     imageStem: "hariprasad-swamiji",
     alt: "H.H. Hariprasad Swamiji, founder of Haridham Sokhada and Yogi Divine Society",
-    factLine: "1934 – July 26, 2021 · Born Gopaldas · Initiated into sainthood in 1965 by Yogiji Maharaj · Founder, Haridham Sokhada / Yogi Divine Society",
+    factLine: "1934 – July 26, 2021 · Born Prabhudas · Initiated into sainthood in 1965 by Yogiji Maharaj · Founder, Haridham Sokhada / Yogi Divine Society",
     lifeWork: [
       "Founded Yogi Divine Society / Haridham Sokhada as an independent organization in 1971–74, headquartered at Haridham, Sokhada Village, Vadodara, Gujarat",
       "Continued the Akshar-Purushottam Siddhant under his own continuation of the guru parampara, distinct from BAPS",
