@@ -47,7 +47,6 @@ export function SiteFooter() {
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <Link href="/contact/">Contact</Link>
-          <a href={actions.whatsappCommunityUrl} rel="noreferrer" target="_blank">Join WhatsApp community</a>
           <div aria-label="Social links" className="flex items-center gap-1" role="group">
             {socialLinks.map((socialLink) => (
               <a

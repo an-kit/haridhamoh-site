@@ -75,10 +75,6 @@ describe("public site components", () => {
       "href",
       "https://chat.whatsapp.com/IBQ4cujX1CqFmgvz05Su1c?mode=gi_t",
     );
-    expect(content.getByRole("link", { name: "Join WhatsApp community" })).toHaveAttribute(
-      "href",
-      "https://chat.whatsapp.com/IBQ4cujX1CqFmgvz05Su1c?mode=gi_t",
-    );
   });
 
   it("renders the approved Haridham Ohio logo and responsive homepage hero", () => {

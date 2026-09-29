@@ -5,21 +5,20 @@ import { CentersList } from "@/components/centers-list";
 import { loadCenters } from "@/lib/content/schema";
 
 describe("approved centers", () => {
-  it("loads four verified destinations, each with a real website URL", () => {
+  it("loads centers with verified URLs and no-link placeholders", () => {
     expect(loadCenters()).toEqual([
       { name: "Vadodara, India", url: "https://shaharidham.org/" },
-      { name: "New Jersey", url: "https://www.harisumiran.org/" },
+      { name: "New Jersey" },
       { name: "Maryland", url: "https://haridhammd.org/" },
       { name: "Chicago", url: "https://www.ydschicago.org/" },
     ]);
   });
 
-  it("renders every center as the same external-link treatment", () => {
+  it("renders linked centers with external-link treatment and static text for no-link centers", () => {
     render(<CentersList centers={loadCenters()} />);
 
     for (const [name, url] of [
       ["Vadodara, India", "https://shaharidham.org/"],
-      ["New Jersey", "https://www.harisumiran.org/"],
       ["Maryland", "https://haridhammd.org/"],
       ["Chicago", "https://www.ydschicago.org/"],
     ]) {
@@ -30,5 +29,8 @@ describe("approved centers", () => {
       expect(link).toHaveClass("underline");
       expect(link).toHaveTextContent("↗");
     }
+
+    const newJerseyStatic = screen.getByText("New Jersey");
+    expect(newJerseyStatic.tagName).not.toBe("A");
   });
 });
