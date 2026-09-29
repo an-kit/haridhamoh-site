@@ -1,8 +1,7 @@
-import Link from "next/link";
-
 import { EventCollection } from "@/components/event-collection";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
+import { ZeffyDonateLink } from "@/components/zeffy-donate-link";
 import { loadActions, loadEvents, loadSiteFacts } from "@/lib/content/schema";
 
 export default function HomePage() {
@@ -44,7 +43,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-7 flex flex-wrap gap-3">
-            <Button asChild><Link href="/donate/">Donate through Zeffy</Link></Button>
+            <Button asChild><ZeffyDonateLink>Donate through Zeffy</ZeffyDonateLink></Button>
             <Button asChild variant="outline"><a href={actions.whatsappCommunityUrl} target="_blank" rel="noreferrer">Join WhatsApp community</a></Button>
           </div>
         </div>

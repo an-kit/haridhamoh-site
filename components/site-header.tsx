@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { ZeffyDonateLink } from "@/components/zeffy-donate-link";
 
 const links = [
   ["About", "/about/"],
@@ -28,7 +29,7 @@ export function SiteHeader() {
           {links.map(([label, href]) => (
             <Link key={href} href={href}>{label}</Link>
           ))}
-          <Button asChild variant="saffron"><Link href="/donate/">Donate</Link></Button>
+          <Button asChild variant="saffron"><ZeffyDonateLink>Donate</ZeffyDonateLink></Button>
         </div>
       </nav>
     </header>

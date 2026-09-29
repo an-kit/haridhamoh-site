@@ -1,12 +1,16 @@
 import { render, screen, within } from "@testing-library/react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { ContactMap } from "@/components/contact-map";
 import { EventCollection } from "@/components/event-collection";
 import { SacredImage } from "@/components/sacred-image";
+import AboutPage from "@/app/about/page";
+import DonatePage from "@/app/donate/page";
 import HomePage from "@/app/page";
 import GuruParamparaPage from "@/app/guru-parampara/page";
 import UpasanaPage from "@/app/upasana/page";
+import RootLayout from "@/app/layout";
 import { SiteHeader } from "@/components/site-header";
 import { loadSiteFacts } from "@/lib/content/schema";
 
@@ -32,8 +36,8 @@ describe("public site components", () => {
     }
 
     expect(screen.getByRole("link", { name: /donate/i })).toHaveAttribute(
-      "href",
-      "/donate",
+      "zeffy-form-link",
+      "https://www.zeffy.com/embed/donation-form/haridham-ohio-hsapss?modal=true",
     );
   });
 
@@ -49,6 +53,50 @@ describe("public site components", () => {
 
     expect(screen.getByRole("img", { name: "Haridham Ohio darshan and temple" }))
       .toHaveAttribute("src", "/assets/brand/haridham-ohio-darshan-hero-desktop.jpg");
+    expect(screen.getByRole("link", { name: "Donate through Zeffy" })).toHaveAttribute(
+      "zeffy-form-link",
+      "https://www.zeffy.com/embed/donation-form/haridham-ohio-hsapss?modal=true",
+    );
+  });
+
+  it("renders the approved About sections, exact community links, and Zeffy modal trigger", () => {
+    const about = render(<AboutPage />);
+    const page = within(about.container);
+
+    for (const heading of ["Who We Are", "Mission, Vision & Atmiyata", "Our Chapter", "Visit & Get Involved"]) {
+      expect(page.getByRole("heading", { level: 2, name: heading })).toBeInTheDocument();
+    }
+
+    expect(page.getByText(/H.H. Pragat Guruhari Param Pujya Premswaroop Swami Maharaj/i)).toBeInTheDocument();
+    expect(page.getByText(/Yuvako maru sarvasva chhe/i)).toBeInTheDocument();
+    expect(page.getByRole("link", { name: "Guru Parampara" })).toHaveAttribute("href", "/guru-parampara/");
+    expect(page.getByRole("link", { name: "Join our WhatsApp community" })).toHaveAttribute(
+      "href",
+      "https://chat.whatsapp.com/IBQ4cujX1CqFmgvz05Su1c?mode=gi_t",
+    );
+    expect(page.getByRole("link", { name: "@haridhamoh" })).toHaveAttribute(
+      "href",
+      "https://www.instagram.com/haridhamoh/",
+    );
+    expect(page.getByRole("link", { name: "Haridham OH Hindu Swaminarayan Temple" })).toHaveAttribute(
+      "href",
+      "https://www.facebook.com/people/Haridham-OH-Hindu-Swaminarayan-Temple/61566728870040/",
+    );
+    expect(page.getByRole("link", { name: "Donate through Zeffy" })).toHaveAttribute(
+      "zeffy-form-link",
+      "https://www.zeffy.com/embed/donation-form/haridham-ohio-hsapss?modal=true",
+    );
+  });
+
+  it("loads Zeffy globally and uses the modal trigger on the Donate page", () => {
+    const layout = renderToStaticMarkup(<RootLayout><p>Layout probe</p></RootLayout>);
+    expect(layout).toContain('<script src="https://zeffy-scripts.s3.ca-central-1.amazonaws.com/embed-form-script.min.js"></script>');
+
+    const donate = render(<DonatePage />);
+    expect(within(donate.container).getByRole("link", { name: "Donate through Zeffy" })).toHaveAttribute(
+      "zeffy-form-link",
+      "https://www.zeffy.com/embed/donation-form/haridham-ohio-hsapss?modal=true",
+    );
   });
 
   it("renders the Akshar Purushottam Siddhant doctrine and lineage link", () => {

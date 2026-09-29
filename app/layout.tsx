@@ -21,6 +21,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
 
   return (
     <html lang="en">
+      <head>
+        <script src="https://zeffy-scripts.s3.ca-central-1.amazonaws.com/embed-form-script.min.js" />
+      </head>
       <body>
         <SiteHeader />
         {children}
