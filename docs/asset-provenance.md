@@ -513,6 +513,12 @@ Last authorization update: 2026-09-28
 - Source form: Direct Contentful asset URL; no `/_next/image` optimizer path or transform parameters. Treat as the site-served source asset, not as a Next.js optimized render.
 - Approval: **Approved by Ankit on 2026-09-27 as the documented historical exception; pending a later step, not copied, deployed, or referenced by the site.**
 
+### Responsive derivative verification (2026-09-28)
+
+- The six direct Contentful delivery URLs above were re-fetched without transform parameters and with `?w=1600`; each response remained 815 × 940 px. No higher-resolution version of these same six assets was available through those recorded Contentful delivery IDs.
+- The HSAPSS candidate page probes at `/guru-parampara` and `/guruparampara` returned 404.
+- The site uses local 320 × 369 px and 640 × 738 px JPEG derivatives made from the approved 815 × 940 px masters. These are downscales only, not upscales. CSS caps portrait display at 310 CSS px; `srcSet` offers 320w and 640w sources.
+
 ## Explicit exclusions
 
 - `https://hsapss.ca/images/hsapss-canada-full-white.svg` and the `_next/static/media/hsapss-canada-full...` logo were observed but excluded as HSAPSS Canada branding.

@@ -6,15 +6,11 @@
 - **Source:** HSAPSS Canada Contentful CMS
 - **Date Approved:** 2026-09-28
 - **Approval Authority:** Ankit Patel (Site Reliability Eng., Haridham Ohio)
-- **Original Dimensions:** 815×940 px
-- **Optimized Format:** 310×357 px JPG @ quality 85
+- **Original Dimensions:** 815×940 px PNG
+- **Responsive Browser Derivatives:** 320×369 px and 640×738 px JPG @ quality 85 (no upscaling)
+- **Display Cap:** 310 CSS px wide; `srcSet` selects 320w or 640w based on device pixel density
 - **Files:**
-  - `guru-parampara/sahajanand-swami.jpg` (33,568 bytes)
-  - `guru-parampara/gunatitanand-swami.jpg` (25,437 bytes)
-  - `guru-parampara/shastriji-maharaj.jpg` (25,667 bytes)
-  - `guru-parampara/yogiji-maharaj.jpg` (26,099 bytes)
-  - `guru-parampara/hariprasad-swamiji.jpg` (26,113 bytes)
-  - `guru-parampara/premswaroop-swami-maharaj.jpg` (26,239 bytes)
+  - `guru-parampara/{sahajanand-swami,gunatitanand-swami,shastriji-maharaj,yogiji-maharaj,hariprasad-swamiji,premswaroop-swami-maharaj}-{320,640}.jpg`
 
 **Note:** /_next/image transforms **not** applied; direct asset delivery per CMS policy.
 

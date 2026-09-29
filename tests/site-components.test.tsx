@@ -92,6 +92,32 @@ describe("public site components", () => {
     expect(screen.getByText(/founder of the organization behind this website/i)).toBeInTheDocument();
   });
 
+  it("caps Guru Parampara portraits and serves responsive 320w and 640w derivatives", () => {
+    const page = render(<GuruParamparaPage />);
+
+    const portraits = [
+      ["Sahajanand Swami, founder of the Swaminarayan faith, in traditional saffron attire", "sahajanand-swami"],
+      ["Gunatitanand Swami, principal disciple and successor to Sahajanand Swami", "gunatitanand-swami"],
+      ["Shastriji Maharaj, spiritual leader who established Swaminarayan Aksharpith", "shastriji-maharaj"],
+      ["Yogiji Maharaj, spiritual guide and advisor to the faithful", "yogiji-maharaj"],
+      ["H.H. Hariprasad Swamiji, founder of Haridham Sokhada and Yogi Divine Society", "hariprasad-swamiji"],
+      ["H.H. Premswaroop Swami Maharaj, current spiritual leader and Guruhari", "premswaroop-swami-maharaj"],
+    ];
+
+    for (const [alt, filename] of portraits) {
+      const portrait = within(page.container).getByAltText(alt);
+      expect(portrait).toHaveAttribute("src", `/assets/brand/guru-parampara/${filename}-640.jpg`);
+      expect(portrait).toHaveAttribute(
+        "srcset",
+        `/assets/brand/guru-parampara/${filename}-320.jpg 320w, /assets/brand/guru-parampara/${filename}-640.jpg 640w`,
+      );
+      expect(portrait).toHaveAttribute("sizes", "(min-width: 768px) 310px, min(100vw - 3rem, 310px)");
+      expect(portrait).toHaveAttribute("width", "310");
+      expect(portrait).toHaveAttribute("height", "357");
+      expect(portrait).toHaveClass("max-w-[310px]");
+    }
+  });
+
   it("uses a static map image and directions derived from site facts", () => {
     render(<ContactMap siteFacts={loadSiteFacts()} />);
 

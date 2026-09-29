@@ -11,7 +11,7 @@ const gurus = [
     id: "sahajanand-swami",
     name: "Sahajanand Swami",
     title: "Lord Swaminarayan, Founder",
-    image: "/assets/brand/guru-parampara/sahajanand-swami.jpg",
+    imageStem: "sahajanand-swami",
     alt: "Sahajanand Swami, founder of the Swaminarayan faith, in traditional saffron attire",
     factLine: "1781–1830 · Born Ghanshyam Pande · Initiated name Sahajanand Swami · Born Chhapaiya, Uttar Pradesh",
     lifeWork: [
@@ -26,7 +26,7 @@ const gurus = [
     id: "gunatitanand-swami",
     name: "Gunatitanand Swami",
     title: "Principal Disciple",
-    image: "/assets/brand/guru-parampara/gunatitanand-swami.jpg",
+    imageStem: "gunatitanand-swami",
     alt: "Gunatitanand Swami, principal disciple and successor to Sahajanand Swami",
     factLine: "1785–1867 · Born Mulji Sharma · Born Bhadra, Gujarat · Principal disciple of Sahajanand Swami",
     lifeWork: [
@@ -41,7 +41,7 @@ const gurus = [
     id: "shastriji-maharaj",
     name: "Shastriji Maharaj",
     title: "Founder, Aksharpith",
-    image: "/assets/brand/guru-parampara/shastriji-maharaj.jpg",
+    imageStem: "shastriji-maharaj",
     alt: "Shastriji Maharaj, spiritual leader who established Swaminarayan Aksharpith",
     factLine: "1865–1951 · Born Shankarbhai Patel · Born Mahelav, Gujarat",
     lifeWork: [
@@ -56,7 +56,7 @@ const gurus = [
     id: "yogiji-maharaj",
     name: "Yogiji Maharaj",
     title: "Spiritual Guide",
-    image: "/assets/brand/guru-parampara/yogiji-maharaj.jpg",
+    imageStem: "yogiji-maharaj",
     alt: "Yogiji Maharaj, spiritual guide and advisor to the faithful",
     factLine: "1892–1971 · Born Jina Bhai · Born Dhari, Gujarat",
     lifeWork: [
@@ -71,7 +71,7 @@ const gurus = [
     id: "hariprasad-swamiji",
     name: "H.H. Hariprasad Swamiji",
     title: "Founder, Haridham Sokhada / YDS",
-    image: "/assets/brand/guru-parampara/hariprasad-swamiji.jpg",
+    imageStem: "hariprasad-swamiji",
     alt: "H.H. Hariprasad Swamiji, founder of Haridham Sokhada and Yogi Divine Society",
     factLine: "1934 – July 26, 2021 · Born Gopaldas · Initiated into sainthood in 1965 by Yogiji Maharaj · Founder, Haridham Sokhada / Yogi Divine Society",
     lifeWork: [
@@ -87,7 +87,7 @@ const gurus = [
     id: "premswaroop-swami-maharaj",
     name: "H.H. Premswaroop Swami Maharaj",
     title: "Current Guruhari",
-    image: "/assets/brand/guru-parampara/premswaroop-swami-maharaj.jpg",
+    imageStem: "premswaroop-swami-maharaj",
     alt: "H.H. Premswaroop Swami Maharaj, current spiritual leader and Guruhari",
     factLine: "Born Prafulbhai, December 27, 1945, Dharmaj, Gujarat · Current Guruhari, Yogi Divine Society – Haridham Sokhada",
     lifeWork: [
@@ -141,9 +141,13 @@ export default function GuruParamparaPage() {
             <div className="grid gap-8 md:grid-cols-[minmax(220px,310px)_1fr] md:items-start">
               <img
                 alt={guru.alt}
-                className="h-auto w-full rounded-xl bg-cream"
+                className="mx-auto h-auto w-full max-w-[310px] rounded-xl bg-cream md:mx-0"
                 decoding="async"
-                src={guru.image}
+                height={357}
+                sizes="(min-width: 768px) 310px, min(100vw - 3rem, 310px)"
+                src={`/assets/brand/guru-parampara/${guru.imageStem}-640.jpg`}
+                srcSet={`/assets/brand/guru-parampara/${guru.imageStem}-320.jpg 320w, /assets/brand/guru-parampara/${guru.imageStem}-640.jpg 640w`}
+                width={310}
               />
               <div>
                 <p className="font-semibold uppercase tracking-[0.18em] text-saffron">Guru Parampara</p>
