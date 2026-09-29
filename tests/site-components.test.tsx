@@ -11,6 +11,7 @@ import HomePage from "@/app/page";
 import GuruParamparaPage from "@/app/guru-parampara/page";
 import UpasanaPage from "@/app/upasana/page";
 import RootLayout from "@/app/layout";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { loadSiteFacts } from "@/lib/content/schema";
 
@@ -38,6 +39,28 @@ describe("public site components", () => {
     expect(screen.getByRole("link", { name: /donate/i })).toHaveAttribute(
       "zeffy-form-link",
       "https://www.zeffy.com/embed/donation-form/haridham-ohio-hsapss?modal=true",
+    );
+  });
+
+  it("renders accessible Instagram, Facebook, and WhatsApp icon links without replacing the WhatsApp text link", () => {
+    const footer = render(<SiteFooter />);
+    const content = within(footer.container);
+
+    expect(content.getByRole("link", { name: "Instagram" })).toHaveAttribute(
+      "href",
+      "https://www.instagram.com/haridhamoh/",
+    );
+    expect(content.getByRole("link", { name: "Facebook" })).toHaveAttribute(
+      "href",
+      "https://www.facebook.com/people/Haridham-OH-Hindu-Swaminarayan-Temple/61566728870040/",
+    );
+    expect(content.getByRole("link", { name: "WhatsApp" })).toHaveAttribute(
+      "href",
+      "https://chat.whatsapp.com/IBQ4cujX1CqFmgvz05Su1c?mode=gi_t",
+    );
+    expect(content.getByRole("link", { name: "Join WhatsApp community" })).toHaveAttribute(
+      "href",
+      "https://chat.whatsapp.com/IBQ4cujX1CqFmgvz05Su1c?mode=gi_t",
     );
   });
 
