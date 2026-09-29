@@ -17,7 +17,7 @@ describe("site facts content", () => {
     expect(loadSiteFacts()).toMatchObject({
       address: "4755 Jeannette Rd, Hilliard, OH 43026",
       phone: "614.512.2761",
-      darshanHours: "Sun–Sat 8AM–1PM, 4PM–9PM",
+      darshanHours: "Sun–Sat 8AM–1PM, 4PM–7PM",
     });
   });
 

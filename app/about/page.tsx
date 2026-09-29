@@ -51,7 +51,7 @@ export default function AboutPage() {
             <table className="w-full min-w-[34rem] border-collapse text-left text-slate">
               <tbody>
                 <tr className="border-b border-slate/10"><th className="w-40 px-6 py-4 font-semibold">Address</th><td className="px-6 py-4">4755 Jeannette Rd, Hilliard, OH 43026</td></tr>
-                <tr className="border-b border-slate/10"><th className="px-6 py-4 font-semibold">Hours</th><td className="px-6 py-4">Daily 8AM–1PM, 4PM–9PM</td></tr>
+                <tr className="border-b border-slate/10"><th className="px-6 py-4 font-semibold">Hours</th><td className="px-6 py-4">Daily 8AM–1PM, 4PM–7PM</td></tr>
                 <tr className="border-b border-slate/10"><th className="px-6 py-4 font-semibold">Phone</th><td className="px-6 py-4">614.512.2761</td></tr>
                 <tr className="border-b border-slate/10"><th className="px-6 py-4 font-semibold">Community</th><td className="px-6 py-4"><a className="font-semibold text-saffron underline decoration-saffron/40 underline-offset-4" href="https://chat.whatsapp.com/IBQ4cujX1CqFmgvz05Su1c?mode=gi_t" rel="noreferrer" target="_blank">Join our WhatsApp community</a></td></tr>
                 <tr className="border-b border-slate/10"><th className="px-6 py-4 font-semibold">Instagram</th><td className="px-6 py-4"><a className="font-semibold text-saffron underline decoration-saffron/40 underline-offset-4" href="https://www.instagram.com/haridhamoh/" rel="noreferrer" target="_blank">@haridhamoh</a></td></tr>
