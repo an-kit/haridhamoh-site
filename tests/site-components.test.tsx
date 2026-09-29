@@ -1,6 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => window.location.pathname,
+}));
 
 import { ContactMap } from "@/components/contact-map";
 import { EventCollection } from "@/components/event-collection";
@@ -40,6 +44,19 @@ describe("public site components", () => {
       "zeffy-form-link",
       "https://www.zeffy.com/embed/donation-form/haridham-ohio-hsapss?modal=true",
     );
+  });
+
+  it("marks the matching nav route active, including event detail routes", () => {
+    window.history.replaceState({}, "", "/about/");
+    const aboutHeader = render(<SiteHeader />);
+    expect(within(aboutHeader.container).getByRole("link", { name: "About" })).toHaveAttribute("aria-current", "page");
+    expect(within(aboutHeader.container).getByRole("link", { name: "Events" })).not.toHaveAttribute("aria-current");
+
+    window.history.replaceState({}, "", "/events/annakut-2026-haridham-ohio-hsapss/");
+    const eventHeader = render(<SiteHeader />);
+    expect(within(eventHeader.container).getByRole("link", { name: "Events" })).toHaveAttribute("aria-current", "page");
+
+    window.history.replaceState({}, "", "/");
   });
 
   it("renders accessible Instagram, Facebook, and WhatsApp icon links without replacing the WhatsApp text link", () => {
