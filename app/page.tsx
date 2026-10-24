@@ -1,4 +1,4 @@
-import { EventCollection } from "@/components/event-collection";
+import { HomeEvents } from "@/components/home-events";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { ZeffyDonateLink } from "@/components/zeffy-donate-link";
@@ -49,7 +49,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {events.length > 0 ? <section className="mt-12" data-event-section><h2 className="font-display text-4xl text-slate">Events</h2><div className="mt-5"><EventCollection events={events} homeLimit={3} /></div></section> : null}
+      <HomeEvents events={events} />
     </PageShell>
   );
 }

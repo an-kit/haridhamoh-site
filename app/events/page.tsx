@@ -1,4 +1,4 @@
-import { EventCollection } from "@/components/event-collection";
+import { EventsArchive } from "@/components/events-archive";
 import { PageHeading, PageShell } from "@/components/page-shell";
 import { loadEvents } from "@/lib/content/schema";
 
@@ -9,7 +9,9 @@ export default function EventsPage() {
   return (
     <PageShell>
       <PageHeading>Events</PageHeading>
-      {events.length > 0 ? <div className="mt-8"><EventCollection events={events} /></div> : null}
+      <div className="mt-8">
+        <EventsArchive events={events} />
+      </div>
     </PageShell>
   );
 }

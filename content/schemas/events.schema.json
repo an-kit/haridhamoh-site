@@ -20,7 +20,39 @@
       "location": { "type": "string", "minLength": 1 },
       "image": { "type": "string", "pattern": "^/uploads/" },
       "zeffyUrl": { "type": "string", "format": "uri" },
-      "description": { "type": "string", "minLength": 1 }
+      "description": { "type": "string", "minLength": 1 },
+      "recap": { "type": "string", "minLength": 1 },
+      "media": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 8,
+        "items": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["type", "src", "thumb", "alt"],
+              "properties": {
+                "type": { "const": "photo" },
+                "src": { "type": "string", "pattern": "^/uploads/" },
+                "thumb": { "type": "string", "pattern": "^/uploads/" },
+                "alt": { "type": "string", "minLength": 1 },
+                "caption": { "type": "string", "minLength": 1 }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["type", "videoId", "title"],
+              "properties": {
+                "type": { "const": "youtube" },
+                "videoId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{11}$" },
+                "title": { "type": "string", "minLength": 1 }
+              }
+            }
+          ]
+        }
+      }
     }
   }
 }

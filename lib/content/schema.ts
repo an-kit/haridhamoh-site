@@ -29,6 +29,25 @@ export const TerminologySchema = z.object({
   guruName: z.literal("Hariprasad Swamiji"),
 });
 
+export const EventMediaSchema = z.discriminatedUnion("type", [
+  z
+    .object({
+      type: z.literal("photo"),
+      src: z.string().startsWith("/uploads/"),
+      thumb: z.string().startsWith("/uploads/"),
+      alt: z.string().min(1),
+      caption: z.string().min(1).optional(),
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal("youtube"),
+      videoId: z.string().regex(/^[A-Za-z0-9_-]{11}$/),
+      title: z.string().min(1),
+    })
+    .strict(),
+]);
+
 export const EventSchema = z
   .object({
     title: z.string().min(1),
@@ -45,6 +64,8 @@ export const EventSchema = z
     image: z.string().startsWith("/uploads/"),
     zeffyUrl: z.url().optional(),
     description: z.string().min(1),
+    recap: z.string().min(1).optional(),
+    media: z.array(EventMediaSchema).min(1).max(8).optional(),
   })
   .refine((event) => !event.endDate || event.endDate >= event.date, {
     message: "endDate must not precede date",
