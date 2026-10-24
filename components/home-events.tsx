@@ -9,10 +9,11 @@ export function HomeEvents({ events }: { events: Event[] }) {
   const now = new Date();
   const upcoming = [...events].sort((left, right) => left.date.localeCompare(right.date));
   const highlights = events
-    .filter((event) => isPastEvent(event, now) && (event.media?.length ?? 0) > 0)
+    .filter((event) => (event.media?.length ?? 0) > 0)
     .sort((left, right) =>
       (right.endDate ?? right.date).localeCompare(left.endDate ?? left.date),
     );
+  const firstPastHighlight = highlights.findIndex((event) => isPastEvent(event, now));
   const hasUpcoming = upcoming.some((event) => !isPastEvent(event, now));
   const hasHighlights = highlights.length > 0;
 
@@ -38,7 +39,7 @@ export function HomeEvents({ events }: { events: Event[] }) {
           {highlights.map((event, index) => (
             <EventCard
               event={event}
-              hidden={!isPastEvent(event, now) || index > 0}
+              hidden={index !== firstPastHighlight}
               key={`home-highlight-${event.title}-${event.date}`}
               list="past"
             />
