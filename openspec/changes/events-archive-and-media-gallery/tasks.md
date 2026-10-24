@@ -58,8 +58,9 @@
 
 - [ ] 10.1 Put the implementation on a branch and open a PR; require the `validate` CI job to be green; merge to `main`; deploy staging from that merged `main` SHA and record it. Do not deploy from an unmerged branch.
 - [ ] 10.2 Build `out/`, upload to `s3://haridhamoh-site-staging-392340646785-us-east-2/releases/<sha>/`, point the staging distribution origin path at it, and invalidate.
-- [ ] 10.3 Report: (a) commit SHA; (b) staging URLs for `/events/`, the homepage, and `/events/annakut-2026-haridham-ohio-hsapss/`; (c) `aws s3api head-object` for one gallery photo and one thumb showing `ContentType: image/jpeg`; (d) gallery photo file sizes. Stop for review.
-- [ ] 10.4 Do NOT deploy to production until Ankit explicitly approves separately.
+- [ ] 10.3 Report: (a) commit SHA; (b) staging URLs for `/events/`, the homepage, and `/events/annakut-2026-haridham-ohio-hsapss/`; (c) `aws s3api head-object` for one gallery photo and one thumb showing `ContentType: image/jpeg`; (d) gallery photo file sizes; (e) gzip client JavaScript per route before vs. after, against the 175,000-byte limit; (f) a real-browser date-flip test on staging using a synthetic test event dated tomorrow, added only to the staging build and never committed to `main`, showing it under Upcoming while Annakut stays under Past, plus the empty-state, jump-link, year-heading, and Home "Recent highlights" states; (g) the inline lifecycle script as it appears in the built staging HTML (not source), confirming no module references and that it runs; (h) the same hidden/shown states still correct 2 seconds after load (post-hydration), not only at first paint. Stop for review.
+- [ ] 10.4 After the checks, remove the synthetic event, rebuild, redeploy staging, and confirm it is absent from the staging HTML and the live staging page.
+- [ ] 10.5 Do NOT deploy to production until Ankit explicitly approves separately.
 
 ## 11. Production promotion and tag (blocked on approval)
 

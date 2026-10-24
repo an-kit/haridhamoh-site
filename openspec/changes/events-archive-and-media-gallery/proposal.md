@@ -35,7 +35,7 @@ None. This change extends the two capabilities already specified by `haridhamoh-
 ### Modified Capabilities
 
 - `public-site-experience`: the Home event section no longer disappears when nothing is upcoming; `/events/` gains Upcoming/Past sections, empty states, and past cards; past detail pages gain a recap and media gallery.
-- `content-governance-and-events`: the event schema gains optional `recap` and `media`; the view-time lifecycle moves cards between Upcoming and Past instead of hiding them; media preparation tooling is specified.
+- `content-governance-and-events`: the event schema gains optional `recap` and `media`; the view-time lifecycle renders every event in both lists and only toggles `hidden`, instead of hiding elapsed events; media preparation tooling is specified.
 
 ## Impact
 
