@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { EventDetail } from "@/components/event-detail";
 import { EventsArchive } from "@/components/events-archive";
+import { HomeEvents } from "@/components/home-events";
 import type { Event } from "@/lib/content/schema";
 import { createEventJsonLd } from "@/lib/content/jsonld";
 
@@ -46,6 +47,13 @@ const upcoming: Event = {
   description: "Coming soon.",
 };
 
+const upcomingWithMedia: Event = {
+  ...upcoming,
+  title: "Upcoming with media",
+  date: "2026-12-02",
+  media: [photos[0]],
+};
+
 describe("events archive", () => {
   it("renders upcoming and past sections with badge, year headings, and poster fallback", () => {
     render(<EventsArchive events={[upcoming, pastWithMedia, pastWithoutMedia]} />);
@@ -74,6 +82,25 @@ describe("events archive", () => {
     expect(Array.isArray(jsonLd.image)).toBe(true);
     expect(jsonLd.image).toHaveLength(5);
     expect(jsonLd.image).toContain("https://haridhamoh.org/uploads/events/past/01.jpg");
+  });
+});
+
+describe("home event fallback", () => {
+  it("renders future media candidates in Recent highlights so the script can reveal them later", () => {
+    render(<HomeEvents events={[upcomingWithMedia, pastWithMedia]} />);
+    const highlightCards = Array.from(
+      document.querySelectorAll("[data-home-highlights] [data-event-card]"),
+    );
+    expect(highlightCards).toHaveLength(2);
+    const upcomingCard = highlightCards.find((card) =>
+      card.textContent?.includes("Upcoming with media"),
+    );
+    expect(upcomingCard).toBeDefined();
+    expect((upcomingCard as HTMLElement).hidden).toBe(true);
+    const pastCard = highlightCards.find((card) =>
+      card.textContent?.includes("Past with media"),
+    );
+    expect((pastCard as HTMLElement).hidden).toBe(false);
   });
 });
 

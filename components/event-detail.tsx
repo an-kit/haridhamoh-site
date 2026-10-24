@@ -4,7 +4,7 @@ import type { Event } from "@/lib/content/schema";
 import { createEventJsonLd } from "@/lib/content/jsonld";
 import { createEventCalendarDataUrl, eventCalendarFilename } from "@/lib/events/calendar";
 import { formatEventDate } from "@/lib/events/format";
-import { isPastEvent } from "@/lib/events/lifecycle";
+import { isPastEvent, renderEventLifecycleScript } from "@/lib/events/lifecycle";
 
 import { EventGallery } from "./event-gallery";
 
@@ -74,6 +74,7 @@ export function EventDetail({ event }: { event: Event }) {
         <EventGallery media={event.media ?? []} title={event.title} />
       </div>
 
+      <script dangerouslySetInnerHTML={{ __html: renderEventLifecycleScript() }} />
       <script dangerouslySetInnerHTML={{ __html: jsonLd }} type="application/ld+json" />
     </article>
   );

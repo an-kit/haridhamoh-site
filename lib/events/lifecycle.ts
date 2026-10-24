@@ -1,12 +1,15 @@
 import type { Event } from "@/lib/content/schema";
 
 /**
- * Today's calendar date in America/New_York as YYYY-MM-DD.
- *
- * This function is stringified into the inline client script, so it must stay
- * pure: no imports, no module-scope references, only Intl and its argument.
+ * Single source of truth for the New York calendar date and the Upcoming/Past
+ * decision. This function is stringified into the inline client script, so it
+ * must stay self-contained: no imports, no module-scope references, only Intl
+ * and its arguments.
  */
-export function newYorkDate(now: Date = new Date()): string {
+export function eventLifecycleState(
+  now: Date,
+  event?: { date: string; endDate?: string },
+): { today: string; past: boolean } {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/New_York",
     year: "numeric",
@@ -15,20 +18,25 @@ export function newYorkDate(now: Date = new Date()): string {
   }).formatToParts(now);
   const part = (type: Intl.DateTimeFormatPartTypes) =>
     parts.find((item) => item.type === type)?.value ?? "";
+  const today = `${part("year")}-${part("month")}-${part("day")}`;
+  const past = event ? (event.endDate ?? event.date) < today : false;
 
-  return `${part("year")}-${part("month")}-${part("day")}`;
+  return { today, past };
+}
+
+export function newYorkDate(now: Date = new Date()): string {
+  return eventLifecycleState(now).today;
 }
 
 /**
  * An event is past once its inclusive end date (or its date) is before today
- * in America/New_York. Also stringified into the inline client script, so it
- * must reference only newYorkDate and its own arguments.
+ * in America/New_York.
  */
 export function isPastEvent(
   event: { date: string; endDate?: string },
   now: Date = new Date(),
 ): boolean {
-  return (event.endDate ?? event.date) < newYorkDate(now);
+  return eventLifecycleState(now, event).past;
 }
 
 export function isUpcomingEvent(event: Event, now = new Date()): boolean {
@@ -56,8 +64,7 @@ export function getPastEvents(events: Event[], now = new Date()): Event[] {
  */
 export function renderEventLifecycleScript(): string {
   return `(() => {
-  const newYorkDate = ${newYorkDate.toString()};
-  const isPastEvent = ${isPastEvent.toString()};
+  const eventLifecycleState = ${eventLifecycleState.toString()};
   const apply = () => {
     const now = new Date();
     const page = document.querySelector("[data-events-page]");
@@ -67,7 +74,7 @@ export function renderEventLifecycleScript(): string {
       let visiblePast = 0;
       const visibleYears = new Set();
       cards.forEach((card) => {
-        const past = isPastEvent({ date: card.dataset.eventStart, endDate: card.dataset.eventEnd }, now);
+        const past = eventLifecycleState(now, { date: card.dataset.eventStart, endDate: card.dataset.eventEnd }).past;
         const inPastList = card.dataset.eventList === "past";
         const visible = inPastList ? past : !past;
         card.hidden = !visible;
@@ -92,14 +99,14 @@ export function renderEventLifecycleScript(): string {
     if (home) {
       let shown = 0;
       home.querySelectorAll("[data-home-upcoming] [data-event-card]").forEach((card) => {
-        const past = isPastEvent({ date: card.dataset.eventStart, endDate: card.dataset.eventEnd }, now);
+        const past = eventLifecycleState(now, { date: card.dataset.eventStart, endDate: card.dataset.eventEnd }).past;
         const visible = !past && shown < 3;
         card.hidden = !visible;
         if (visible) shown += 1;
       });
       let shownHighlights = 0;
       home.querySelectorAll("[data-home-highlights] [data-event-card]").forEach((card) => {
-        const past = isPastEvent({ date: card.dataset.eventStart, endDate: card.dataset.eventEnd }, now);
+        const past = eventLifecycleState(now, { date: card.dataset.eventStart, endDate: card.dataset.eventEnd }).past;
         const visible = past && shownHighlights < 1;
         card.hidden = !visible;
         if (visible) shownHighlights += 1;
@@ -113,7 +120,7 @@ export function renderEventLifecycleScript(): string {
     }
     const detail = document.querySelector("[data-event-detail]");
     if (detail) {
-      const past = isPastEvent({ date: detail.dataset.eventStart, endDate: detail.dataset.eventEnd }, now);
+      const past = eventLifecycleState(now, { date: detail.dataset.eventStart, endDate: detail.dataset.eventEnd }).past;
       const upcoming = detail.querySelector("[data-detail-upcoming]");
       const pastBlock = detail.querySelector("[data-detail-past]");
       if (upcoming) upcoming.hidden = past;
