@@ -56,14 +56,14 @@ The Zod schema in `lib/content/schema.ts` and the JSON Schema in `content/schema
 
 All events SHALL render in static HTML with machine-readable date and time data. The "today in America/New_York" calculation SHALL exist in exactly one function in `lib/events/lifecycle.ts`; the inline client script SHALL be generated from that function's source so server-rendered and view-time classification cannot drift. A companion `isPastEvent()` SHALL classify an event as past when `(endDate ?? date)` is earlier than today in `America/New_York`.
 
-At build time, every event card SHALL be emitted into the Upcoming section or the Past section according to the build date. That placement is the no-JavaScript fallback and SHALL NOT be the only classification.
+At build time, **every event SHALL be rendered as a card in both** the Upcoming list and the Past list, pre-sorted (Upcoming ascending by `date`; Past descending by `endDate ?? date`). Build-time classification SHALL set each card's initial `hidden` value; that placement is the no-JavaScript fallback. Year headings SHALL be rendered for every year present in the content. Past-list cards for events that are still upcoming SHALL use `loading="lazy"`.
 
-At view time, a small inline script, counted toward the client JavaScript budget, SHALL re-evaluate every card in `America/New_York`, move cards between the Upcoming and Past sections, sort each section (Upcoming ascending by start date; Past descending by end date), and toggle the Upcoming empty state, the Past section, year headings, the jump link, and the detail page's upcoming/past blocks. Production artifacts SHALL remain immutable; this behavior SHALL NOT require a scheduled rebuild or a content change.
+At view time, a small inline script, counted toward the client JavaScript budget, SHALL re-evaluate every card in `America/New_York` and SHALL only toggle the `hidden` attribute on cards, year headings, the Upcoming empty state, the Past section, the jump link, the Home upcoming/highlights blocks, and the detail page's upcoming/past blocks. It SHALL NOT move, create, remove, or sort DOM nodes. Production artifacts SHALL remain immutable; this behavior SHALL NOT require a scheduled rebuild or a content change.
 
 #### Scenario: Event elapses after production deployment
 
 - **WHEN** a visitor views a production artifact after an event's date or `endDate` has elapsed in America/New_York
-- **THEN** the script moves the card from Upcoming to Past without changing or rebuilding the production artifact
+- **THEN** the script hides the Upcoming card and reveals the Past card without changing or rebuilding the production artifact
 
 #### Scenario: Multi-day event remains eligible at view time
 
@@ -78,7 +78,7 @@ At view time, a small inline script, counted toward the client JavaScript budget
 #### Scenario: JavaScript is unavailable
 
 - **WHEN** a visitor loads `/events/` without JavaScript
-- **THEN** cards remain in the section determined at build time and the page still renders both section containers without a blank page
+- **THEN** the build-time `hidden` values remain in effect and the page still renders both section containers without a blank page
 
 #### Scenario: Duplicate date logic is introduced
 

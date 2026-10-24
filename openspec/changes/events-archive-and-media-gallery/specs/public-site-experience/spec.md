@@ -31,7 +31,7 @@ The Home page SHALL use the inline event-lifecycle behavior to show the next upc
 
 Upcoming SHALL list events in ascending date order. When no upcoming event exists, it SHALL show the exact text "No upcoming events right now. Join our WhatsApp community for announcements" together with the WhatsApp button whose destination comes from `content/actions.json`. The page SHALL NOT be blank in any state.
 
-Past events SHALL list events newest first. Each past card SHALL link to its detail page and show: the cover photo (the first `photo` in `media`), a friendly date such as "Saturday, October 24, 2026", the title, and a media badge such as "4 photos · 1 video". The badge SHALL count photos and videos, pluralize each noun, omit a zero-count category, and SHALL NOT render when the event has no `media`. Past events without media SHALL still render a card with date and title.
+Past events SHALL list events newest first. Each past card SHALL link to its detail page and show: a cover image, a friendly date such as "Saturday, October 24, 2026", the title, and a media badge such as "4 photos · 1 video" when the event has `media`. The cover SHALL be the first `photo` item's `thumb`; when the event has no `media`, the cover SHALL be the event's existing poster `image`. The badge SHALL count photos and videos, pluralize each noun, omit a zero-count category, and SHALL NOT render when the event has no `media`. Past events without media SHALL still render a card with cover, date, and title.
 
 Past events SHALL be grouped under year headings when the past list contains more than six events or spans more than one calendar year. A "See past events ↓" jump link SHALL appear at the top of the page only when both sections have content.
 
@@ -53,18 +53,23 @@ Past events SHALL be grouped under year headings when the past list contains mor
 #### Scenario: Past card without media
 
 - **WHEN** a past event has no `media`
-- **THEN** its card shows date and title without a cover image or media badge
+- **THEN** its card uses the event's poster image as the cover, shows date and title, and renders no media badge
 
 ### Requirement: Past-event detail state
 
-For an event whose `(endDate ?? date)` is earlier than today in America/New_York, the detail page SHALL show the banner "This event took place on <friendly date>", SHALL hide the Add to Calendar and Event Seva actions, and SHALL render the `recap` paragraph when present.
+For an event whose `(endDate ?? date)` is earlier than today in America/New_York, the detail page SHALL show the banner "This event took place on <friendly date>", SHALL hide the Add to Calendar and Event Seva actions and the "Sabha starts at" line, and SHALL render the `recap` paragraph in place of the description. When no `recap` exists, it SHALL render the description instead.
 
-Upcoming events SHALL keep their current detail presentation, including Add to Calendar and Event Seva where applicable.
+Upcoming events SHALL keep their current detail presentation, including the description, the "Sabha starts at" line, and Add to Calendar and Event Seva where applicable.
 
 #### Scenario: Visitor opens a past event
 
 - **WHEN** a visitor opens a past event's detail page
-- **THEN** the banner names the friendly date, Add to Calendar and Event Seva are absent, and the recap is shown when present
+- **THEN** the banner names the friendly date, Add to Calendar, Event Seva, and the "Sabha starts at" line are absent, and the recap is shown in place of the description
+
+#### Scenario: Past event has no recap
+
+- **WHEN** a past event's content omits `recap`
+- **THEN** the detail page shows the event description in its place
 
 #### Scenario: Visitor opens an upcoming event
 
@@ -79,7 +84,12 @@ Photo items SHALL render as images with the supplied `alt` text. Activating a ph
 
 YouTube items SHALL render as a thumbnail with a play button and SHALL NOT load the `youtube-nocookie.com` iframe until the visitor activates play. The iframe SHALL use the privacy-enhanced `youtube-nocookie.com` host and the event's 11-character `videoId`.
 
-The gallery SHALL add no new runtime npm dependency and SHALL keep its client JavaScript within the existing 150 KB budget.
+The gallery SHALL be server-rendered HTML (thumbnail buttons plus one native `<dialog>`) enhanced by a small vanilla inline script; it SHALL NOT be a React client component. It SHALL add no new runtime npm dependency and SHALL keep shipped client JavaScript at or below 175,000 gzip bytes per route, the release exception recorded in `accessible-static-site-quality` (measured framework floor 170,326 gzip bytes plus 4,674 bytes of headroom). A release above that budget SHALL NOT be eligible for production promotion without an explicit exception from Ankit.
+
+#### Scenario: Client JavaScript budget is measured
+
+- **WHEN** the release candidate is built
+- **THEN** gzip client JavaScript is measured per route before and after the change, the result is reported, and the release is blocked if any route exceeds 175,000 gzip bytes without an explicit exception
 
 #### Scenario: Visitor opens the photo viewer
 

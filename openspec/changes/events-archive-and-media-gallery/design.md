@@ -9,7 +9,7 @@ The same "today in New York" logic exists twice today: `dateInNewYork()` in `lib
 **Goals**
 
 - `/events/` always shows something: Upcoming (with a WhatsApp empty state) and Past events.
-- Past events stay reachable, with cover photo, friendly date, media badge, year grouping, and a recap + gallery detail page.
+- Past events stay reachable, with cover image, friendly date, media badge, year grouping, and a recap + gallery detail page.
 - One source of truth for "today in New York", shared by build-time render and the inline script.
 - No new runtime dependency; no rebuild when a date passes.
 - Media preparation that strips EXIF/GPS before anything reaches `public/uploads/`.
@@ -24,16 +24,22 @@ The same "today in New York" logic exists twice today: `dateInNewYork()` in `lib
 
 ## Decisions
 
-### 1. Build-time placement is the fallback; view-time script is authoritative
+### 1. Every card is rendered in both lists; the script only toggles `hidden`
 
-`lib/events/lifecycle.ts` gains `isPastEvent(event, now)` and a partition helper. Server components render each card into `[data-event-section="upcoming"]` or `[data-event-section="past"]` using the build date, which is the no-JS state. The inline script re-partitions on load, moves cards between the two containers, re-sorts them, and toggles:
+`lib/events/lifecycle.ts` gains `isPastEvent(event, now)` plus build-time partition helpers. The server renders **every event as a card in both** the Upcoming list and the Past list, pre-sorted at build time: Upcoming ascending by `date`, Past descending by `(endDate ?? date)`. The build date sets each card's initial `hidden` value, and that is the no-JavaScript fallback.
 
+The inline script never moves, appends, removes, creates, or sorts nodes. It computes `isPastEvent` from each card's `data-event-start` / `data-event-end` and toggles only the `hidden` attribute on:
+
+- the card in the Upcoming list and the card in the Past list,
+- each year heading,
 - `[data-event-empty="upcoming"]` (the WhatsApp empty state),
-- `[data-event-section="past"]` and its year headings,
-- `[data-past-jump]`,
+- `[data-event-section="past"]` and `[data-past-jump]`,
+- `[data-home-highlights]` and the Home upcoming list,
 - on detail pages, `[data-detail-upcoming]` and `[data-detail-past]`.
 
-Cards carry `data-event-start`, `data-event-end`, and `data-event-year`. The script runs on `DOMContentLoaded` (after hydration) and only moves static, non-stateful nodes; the page never re-renders, so React reconciliation is not involved after the move. The build-date placement means a just-passed event can appear under Upcoming until the script runs, but the page is never blank.
+The script is parser-inserted immediately after the lists, so it runs without waiting for `DOMContentLoaded`; a single `requestAnimationFrame` pass re-applies the same attribute toggles after hydration. Because it only flips attributes, React has no structural change to reconcile or undo.
+
+Past-list cards for events that are still upcoming are rendered with `loading="lazy"` so their hidden covers are not fetched. The cost of this design is a duplicated card DOM on `/events/`; the benefit is that classification can never corrupt the rendered structure.
 
 ### 2. One timezone function, stringified into the page
 
@@ -65,40 +71,42 @@ Friendly dates are formatted from `YYYY-MM-DD` at 12:00 UTC with `Intl.DateTimeF
 [data-events-page]
   [data-past-jump] "See past events ↓"            (hidden unless both sections have content)
   <section data-event-section="upcoming">
-    cards, ascending
+    cards for every event, ascending by date
     [data-event-empty="upcoming"]                 (hidden unless no upcoming)
   <section data-event-section="past">
-    <h3 data-year-heading="2026">2026</h3>
-    cards, newest first
+    <h3 data-year-heading="2026">2026</h3>        (one per year present in the content)
+    cards for every event, newest first
 ```
 
-Past cards use the first `photo` item and its `thumb` as the cover (600px is enough for a card), the friendly date, the title, and a badge built from counts. Badge rules: `4 photos · 1 video`, `1 photo`, `2 videos`; a zero-count category is omitted; no media means no badge and no cover.
+Past cards use the first `photo` item and its `thumb` as the cover (600px is enough for a card). When an event has no `media`, the card falls back to the event's existing poster `image` as the cover and omits the badge; it never renders an empty cover area.
 
-Year headings are emitted at build time when the past list exceeds six events or spans more than one year. When the script moves a card into a year that has no heading, it creates the heading in the correct position; when a year empties, it removes the heading. The threshold is recorded as an open question until confirmed.
+Badge rules: `4 photos · 1 video`, `1 photo`, `2 videos`; a zero-count category is omitted; no media means no badge. Cards show the friendly date and title in every case.
+
+Year headings are rendered at build time for **every year present** in the content, in descending order. The script only hides or reveals them: headings are visible only when the past list has more than six cards or spans more than one year, and a heading whose year has no visible past card is hidden. No heading is created or removed at view time.
 
 ### 4. Home fallback
 
-Home renders Upcoming (max 3) and, hidden, a `[data-home-highlights]` block for the latest past event with media. The same script reveals the highlights block when no upcoming cards remain. When no past event has media, the block shows the heading plus a link to `/events/` rather than an empty card. The section container is never removed.
+Home renders Upcoming (max 3) and, hidden, a `[data-home-highlights]` block for the latest past event with media. The script reveals the highlights block and hides the upcoming list when no upcoming cards remain. When no past event has media, the block shows the "Recent highlights" heading plus a link to `/events/` rather than an empty card. The section container is never removed.
 
 ### 5. Detail page states
 
 The server renders both blocks:
 
-- `[data-detail-upcoming]`: existing actions (Add to Calendar, Event Seva).
-- `[data-detail-past]`: banner "This event took place on <friendly date>", optional `recap`, gallery.
+- `[data-detail-upcoming]`: existing description, "Sabha starts at …" line, and actions (Add to Calendar, Event Seva).
+- `[data-detail-past]`: banner "This event took place on <friendly date>", the `recap` paragraph in place of the description (falling back to the description when no recap exists), and the gallery.
 
-The script toggles `hidden` on the two blocks using the card's event dates. The gallery markup ships in the static HTML; for an upcoming event it stays inside the hidden past block.
+The past block hides the "Sabha starts at" line and both actions. The script toggles `hidden` on the two blocks using the event's dates; the gallery markup ships in the static HTML and for an upcoming event stays inside the hidden past block.
 
-### 6. Gallery
+### 6. Gallery: server-rendered markup, vanilla inline script
 
-`components/event-gallery.tsx` is a client component (no new dependency):
+`components/event-gallery.tsx` is a **server component**; it emits no client JavaScript of its own:
 
-- Grid of `<button>` thumbnails, each wrapping `<img src={thumb} alt={alt}>`.
-- One native `<dialog>` per event, containing a horizontally scroll-snapping track of `<figure>` elements at 1600px `src`. Arrow keys scroll by one item, Escape closes natively, backdrop click closes, focus moves to the close button on open and returns to the invoking thumbnail on close. The counter is updated from the scroll position (`2 of 5`).
-- Captions render under each photo when present.
-- `components/youtube-facade.tsx` renders a button with `https://i.ytimg.com/vi/<id>/hqdefault.jpg` and the supplied title; on activation it swaps in `<iframe src="https://www.youtube-nocookie.com/embed/<id>?autoplay=1&rel=0" title={title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen>`. No YouTube script is loaded before activation.
+- A grid of `<button data-gallery-open="N">` thumbnails, each wrapping `<img src={thumb} alt={alt}>`.
+- One native `<dialog data-gallery-dialog>` containing a horizontally scroll-snapping track of `<figure>` elements at 1600px `src`, each with its caption, plus a close button and a `[data-gallery-counter]` element.
 
-Both components are used only on event detail pages, so the list and Home pages do not pay their JavaScript cost. Total client JS must stay under the existing 150 KB budget; the CI build output is the evidence.
+A single small vanilla inline script on the detail page handles: opening the dialog on a thumbnail, closing on the close button / Escape / backdrop click, arrow-key and scroll-snap navigation, updating the counter (`2 of 5`), moving focus into the dialog and restoring it to the invoking thumbnail. The same script handles the YouTube facade: a `<button data-youtube-id="…" data-youtube-title="…">` with `https://i.ytimg.com/vi/<id>/hqdefault.jpg` swaps itself for `<iframe src="https://www.youtube-nocookie.com/embed/<id>?autoplay=1&rel=0" title="…" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen>` on activation. No YouTube script or iframe loads before activation.
+
+There is no React client component and therefore no hydration cost for the gallery. The budget is **175,000 gzip bytes** of shipped client JavaScript per route, per the `accessible-static-site-quality` release exception: the measured framework floor is 170,326 gzip bytes, leaving 4,674 bytes. The implementation must measure gzip JS per route before and after the change and report it; a release above 175,000 gzip bytes is not promotable without an explicit exception from Ankit.
 
 ### 7. Media preparation script
 
@@ -110,6 +118,8 @@ Both components are used only on event detail pages, so the list and Home pages 
 - Writes to `public/uploads/events/<slug>/`, prints the `media` JSON array with `/uploads/events/<slug>/NN.jpg` paths, and exits non-zero if any output still carries EXIF.
 - HEIC decoding depends on the installed libvips; if sharp cannot decode HEIC, the script stops with an instruction to convert first (`sips -s format jpeg`) rather than silently skipping.
 
+`sharp` is an approved devDependency used only by this script; it is never bundled or shipped.
+
 ### 8. Schema parity
 
 `lib/content/schema.ts` and `content/schemas/events.schema.json` are edited by hand and kept behaviourally identical. `additionalProperties: false` stays set. A shared fixture set (valid photo+video; full URL; missing alt; non-`/uploads/`; nine items) runs through both validators in one test. Generating the JSON Schema from Zod is recorded as a future follow-up, not implemented.
@@ -120,18 +130,19 @@ Both components are used only on event detail pages, so the list and Home pages 
 
 ### 10. Deploy and tag sequencing
 
-- Commit and push to `main` before any deploy, so the deployed SHA exists on `main`.
+- Implementation lives on a branch as a pull request. `validate` CI must be green, then the branch is merged to `main`. Staging is deployed from that merged `main` SHA, so the deployed SHA always exists on `main`.
 - Staging only: build `out/`, upload to `s3://haridhamoh-site-staging-392340646785-us-east-2/releases/<sha>/`, point the staging distribution's origin path at that prefix, invalidate, then record the evidence requested in the build request (SHA; `/events/`, homepage, Annakut detail URLs; `head-object` for one photo and one thumb showing `image/jpeg`; photo file sizes).
 - Production waits for separate explicit approval. On promotion, create `refs/tags/production` at the promoted SHA, verified against the CloudFront origin path, as part of that production promotion, with Ankit's explicit authorization. Tagging `51e0529` instead would make future Hermes content-only candidates fail with `PATH_VIOLATION`, because this feature's code is in the diff.
 
 ## Risks / Trade-offs
 
 - **Time sensitivity**: production shows a blank Events page from 2026-10-25 until this ships. Staging can be reviewed first, but the production approval should not wait long.
-- **Post-hydration DOM moves**: moving React-owned nodes is safe only because static pages do not re-render. Running on `DOMContentLoaded` and limiting mutations to `hidden` and section placement keeps it contained.
-- **Year-heading creation**: dynamically creating headings is more code than hiding them; a bug can leave a card outside a heading. Tests assert each past card has a preceding year heading after the script runs.
+- **Duplicated card DOM**: every event renders twice on `/events/`, increasing HTML size and repeating image URLs. `loading="lazy"` on upcoming cards in the Past list limits hidden-image fetches; the same URL is cache-shared when a card is revealed.
+- **Attribute toggles around hydration**: the script flips only `hidden`, before and once after hydration. If React re-applies a server value, the `requestAnimationFrame` pass restores the correct state without structural mutation.
+- **Budget headroom**: only 4,674 gzip bytes above the framework floor. The gallery script must be measured per route; an over-budget release blocks promotion.
+- **Year headings**: every year heading ships in the HTML and is hidden when unused; a bug shows an empty year heading rather than misplacing a card.
 - **YouTube thumbnails**: `i.ytimg.com` is requested at page load (IP visible to Google) even though no cookie-bearing iframe loads until play. Self-hosting thumbnails is a possible later refinement.
 - **HEIC**: sharp's HEIC support varies by libvips build; the script fails loudly rather than producing a partial batch.
-- **sharp**: added as a devDependency only; it is never bundled. This is the one new package and is called out for approval.
 - **Schema drift**: hand-maintained Zod and JSON Schema can diverge; the shared fixture test is the guard until generation is automated.
 
 ## Migration Plan
@@ -139,18 +150,18 @@ Both components are used only on event detail pages, so the list and Home pages 
 Spec baseline dependency: `openspec/specs/` is empty because `haridhamoh-site-v2` is not archived yet. This change's `MODIFIED` deltas therefore target the capability specs that v2 establishes; archive v2 before archiving this change, or the archive step will refuse the modified requirements (OpenSpec reports this as an informational finding today).
 
 1. Review and approve this OpenSpec change.
-2. Implement schema, lifecycle helper, Events page, Home fallback, detail states, gallery, JSON-LD, script, and tests on a branch/PR.
-3. `npm run ci:validate` green; deploy to staging only; report the requested evidence; stop.
+2. Implement schema, lifecycle helper, Events page, Home fallback, detail states, gallery, JSON-LD, script, and tests on a branch and open a PR.
+3. `npm run ci:validate` green; merge to `main`; deploy to staging from that merged SHA only; report the requested evidence; stop.
 4. After separate production approval, promote the same built SHA, then create the `production` tag at that promoted SHA as part of the promotion.
 5. Annakut media arrives as a separate content-only commit once the photos, captions, recap, and YouTube link are supplied; it re-runs CI and follows the same staging-first path.
 
 Rollback: redeploy the previous production release prefix; no rebuild, no content change.
 
-## Open Questions
+## Resolved Review Decisions
 
-- Year grouping: is "more than a few" = more than six past events, or any multi-year list, or both? This design uses "more than six OR more than one calendar year".
-- Is `recap` plain text only, or should it allow paragraphs/Markdown? This design assumes a single plain-text paragraph.
-- Should past cards always use the 600px thumb, or the 1600px `src` when no thumb exists? This design requires `thumb` on every photo.
-- Is `sharp` acceptable as a devDependency, given the "no new npm dependencies" constraint was about the gallery runtime?
-- Should the YouTube facade use the maxres thumbnail when available, with `hqdefault` fallback, or always `hqdefault`?
-- When no event is upcoming and no past event has media, is "Recent highlights" heading plus a `/events/` link the right fallback, or should it show the WhatsApp empty state instead?
+- Year grouping uses more than six past events **or** more than one calendar year.
+- `recap` is plain text only (a single paragraph).
+- `thumb` is required on every photo.
+- `sharp` is approved as a devDependency; it is not a runtime dependency.
+- The YouTube facade always uses `hqdefault.jpg`.
+- When nothing is upcoming and no past event has media, "Recent highlights" shows the heading plus a link to `/events/`.
