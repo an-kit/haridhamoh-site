@@ -15,6 +15,12 @@ const galleryScript = `(() => {
     const closeButton = dialog.querySelector("[data-gallery-close]");
     let lastTrigger = null;
     let current = 0;
+    const show = (index) => {
+      if (!slides.length) return;
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      track.scrollLeft = track.clientWidth * current;
+      counter.textContent = (current + 1) + " of " + slides.length;
+    };
     const update = () => {
       if (!slides.length) return;
       const width = track.clientWidth || 1;
@@ -27,24 +33,24 @@ const galleryScript = `(() => {
         const index = Number(button.dataset.galleryOpen || 0);
         dialog.showModal();
         requestAnimationFrame(() => {
-          track.scrollTo({ left: track.clientWidth * index, behavior: "instant" });
-          update();
+          show(index);
           if (closeButton) closeButton.focus();
         });
       });
     });
     track.addEventListener("scroll", () => requestAnimationFrame(update), { passive: true });
+    track.addEventListener("scrollend", update);
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog) dialog.close();
     });
     dialog.addEventListener("keydown", (event) => {
       if (event.key === "ArrowRight") {
         event.preventDefault();
-        track.scrollBy({ left: track.clientWidth, behavior: "smooth" });
+        show(current + 1);
       }
       if (event.key === "ArrowLeft") {
         event.preventDefault();
-        track.scrollBy({ left: -track.clientWidth, behavior: "smooth" });
+        show(current - 1);
       }
     });
     dialog.addEventListener("close", () => {
