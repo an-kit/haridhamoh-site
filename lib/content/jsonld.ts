@@ -53,6 +53,12 @@ export function placeOfWorshipJsonLd(siteFacts: SiteFacts) {
 }
 
 export function createEventJsonLd(event: Event) {
+  const photos = (event.media ?? [])
+    .filter((item) => item.type === "photo")
+    .map((item) => item.src);
+  const absolute = (path: string) =>
+    path.startsWith("http") ? path : `https://haridhamoh.org${path}`;
+
   return {
     "@context": "https://schema.org",
     "@type": "Event",
@@ -65,7 +71,10 @@ export function createEventJsonLd(event: Event) {
       "@type": "Place",
       name: event.location,
     },
-    image: event.image,
+    image:
+      photos.length > 0
+        ? [event.image, ...photos].map(absolute)
+        : event.image,
     description: event.description,
   };
 }

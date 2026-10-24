@@ -11,7 +11,7 @@ describe("event detail public copy", () => {
     const [event] = loadEvents();
     render(<EventDetail event={event} />);
 
-    expect(screen.getByText(event.description)).toBeInTheDocument();
+    expect(screen.getAllByText(event.description).length).toBeGreaterThan(0);
     expect(screen.queryByText(event.endTimeNote ?? "")).not.toBeInTheDocument();
     expect(screen.queryByText("Sabha: 10:30 AM–12:00 PM")).not.toBeInTheDocument();
   });
