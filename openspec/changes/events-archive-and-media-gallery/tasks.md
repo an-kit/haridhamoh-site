@@ -7,8 +7,9 @@
 ## 2. Single timezone helper
 
 - [ ] 2.1 Add `newYorkDate(now)` and `isPastEvent(event, now)` to `lib/events/lifecycle.ts`; keep both pure (no imports, no module-scope references) and keep `isUpcomingEvent` consistent with `!isPastEvent`.
-- [ ] 2.2 Add `renderEventLifecycleScript()` that emits the inline script from `newYorkDate.toString()` and `isPastEvent.toString()` plus a DOM runner; verify the emitted source has no `import`/`require` and runs in an isolated VM context.
-- [ ] 2.3 Remove the hand-written date maths from `components/event-collection.tsx`; verify no second `America/New_York` date calculation exists in `lib/`, `components/`, or `app/`.
+- [ ] 2.2 Add `renderEventLifecycleScript()` that emits `eventLifecycleState.toString()` and the exported `applyEventLifecycle.toString()` plus an inline first-paint caller; verify the emitted source has no `import`/`require` and runs in an isolated VM context.
+- [ ] 2.3 Add a small root-layout client component that calls the same exported `applyEventLifecycle(document, new Date(), eventLifecycleState)` on mount, every pathname change, and `pageshow` (bfcache restore); do not duplicate DOM toggling logic.
+- [ ] 2.4 Remove the hand-written date maths from `components/event-collection.tsx`; verify no second `America/New_York` date calculation exists in `lib/`, `components/`, or `app/`.
 
 ## 3. Events page
 
@@ -52,7 +53,8 @@
 - [ ] 9.2 Test schema accept/reject cases from 1.3 against both validators.
 - [ ] 9.3 Test past detail page hides Add to Calendar, Event Seva, and the "Sabha starts at" line; shows the banner; renders recap in place of the description and falls back to the description when recap is absent; renders every gallery image with non-empty `alt`.
 - [ ] 9.4 Test past card badge counts and pluralization ("4 photos · 1 video", "1 photo", "2 videos", no media) and the poster-image cover fallback when an event has no media.
-- [ ] 9.5 Run `npm run ci:validate`; verify schema, routes, accessibility, structured data, path gate, `tsc`, and build all pass.
+- [ ] 9.5 Run `npm run ci:validate`; verify schema, routes, accessibility, structured data, lifecycle browser regression, path gate, `tsc`, and build all pass.
+- [ ] 9.6 Add a real-browser lifecycle regression that pins the build clock before the 2026-10-25 New York flip, exercises direct `/events/`, `/`, and Annakut detail loads plus Home → header Events → Annakut client navigation and browser Back at both October 24 and October 25 browser clocks, and asserts only the required hidden states. The test must fail if its build timestamp is on or after the flip and must use a temporary test-only synthetic future event to prove the no-JS build fallback does not pre-render a future event as Past.
 
 ## 10. Staging deploy and evidence (STOP)
 

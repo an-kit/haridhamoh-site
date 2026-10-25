@@ -1,5 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { EventDetail } from "@/components/event-detail";
 import { createEventCalendarDataUrl } from "@/lib/events/calendar";
@@ -28,9 +28,15 @@ describe("event detail public copy", () => {
     expect(calendar).not.toContain(event.endTimeNote ?? "");
     expect(calendar).not.toContain("DTEND");
 
-    const detail = render(<EventDetail event={event} />);
-    const link = within(detail.container).getByRole("link", { name: "Add to Calendar" });
-    expect(link).toHaveAttribute("href", calendarUrl);
-    expect(link).toHaveAttribute("download", `${eventSlug(event.title)}.ics`);
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-10-24T14:00:00.000Z"));
+    try {
+      const detail = render(<EventDetail event={event} />);
+      const link = within(detail.container).getByRole("link", { name: "Add to Calendar" });
+      expect(link).toHaveAttribute("href", calendarUrl);
+      expect(link).toHaveAttribute("download", `${eventSlug(event.title)}.ics`);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
