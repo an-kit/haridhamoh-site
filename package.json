@@ -15,7 +15,8 @@
     "test:structured-data": "vitest run tests/content.test.ts",
     "test:events": "vitest run tests/lifecycle.test.ts tests/events-archive.test.tsx tests/event-media-schema.test.ts",
     "test:changed-path": "node --test tests/hermes-path-gate.test.mjs",
-    "ci:validate": "npm run test:schema && npm run test:routes && npm run test:accessibility && npm run test:structured-data && npm run test:events && npm run test:changed-path && npx tsc --noEmit && npm run build"
+    "test:lifecycle:e2e": "playwright install chromium && playwright test --config=playwright.lifecycle.config.ts --reporter=list",
+    "ci:validate": "npm run test:schema && npm run test:routes && npm run test:accessibility && npm run test:structured-data && npm run test:events && npm run test:lifecycle:e2e && npm run test:changed-path && npx tsc --noEmit && npm run build"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.3.0",
@@ -31,6 +32,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

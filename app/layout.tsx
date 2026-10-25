@@ -6,6 +6,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { EventLifecycleClient } from "@/components/event-lifecycle-client";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { placeOfWorshipJsonLd } from "@/lib/content/jsonld";
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       </head>
       <body>
         <SiteHeader />
+        <EventLifecycleClient />
         {children}
         <SiteFooter />
         <script

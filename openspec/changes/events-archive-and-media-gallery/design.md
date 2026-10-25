@@ -37,7 +37,7 @@ The inline script never moves, appends, removes, creates, or sorts nodes. It com
 - `[data-home-highlights]` and the Home upcoming list,
 - on detail pages, `[data-detail-upcoming]` and `[data-detail-past]`.
 
-The script is parser-inserted immediately after the lists, so it runs without waiting for `DOMContentLoaded`; a single `requestAnimationFrame` pass re-applies the same attribute toggles after hydration. Because it only flips attributes, React has no structural change to reconcile or undo.
+The parser-inserted script runs immediately after the lists, and calls the exported `applyEventLifecycle(document, new Date(), eventLifecycleState)` function before first paint. A small root-layout client component calls that exact same function on mount, after every `usePathname()` change, and on `pageshow` so client navigation and bfcache restores cannot retain build-time attributes. Neither caller owns DOM logic; both supply only `document`, `new Date()`, and `eventLifecycleState`. Because the runner only flips attributes, React has no structural change to reconcile or undo.
 
 Past-list cards for events that are still upcoming are rendered with `loading="lazy"` so their hidden covers are not fetched. The cost of this design is a duplicated card DOM on `/events/`; the benefit is that classification can never corrupt the rendered structure.
 
