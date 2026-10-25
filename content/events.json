@@ -8,6 +8,44 @@
     "location": "4755 Jeannette Rd, Hilliard, OH 43026",
     "image": "/uploads/events/annakut-2026.jpg",
     "zeffyUrl": "https://www.zeffy.com/en-US/ticketing/annakut-2026-haridham-ohio-hsapss",
-    "description": "Join us for Annakut 2026, celebrating 200 years of the Shikshapatri, as devotees offer a mountain of prasad to Thakorji. Sabha followed by Mahaprasad."
+    "description": "Join us for Annakut 2026, celebrating 200 years of the Shikshapatri, as devotees offer a mountain of prasad to Thakorji. Sabha followed by Mahaprasad.",
+    "recap": "On the 200th anniversary of the Shikshapatri, about 250 devotees from across the Ohio samaj came together to prepare and offer a bountiful Annakut to Thakorji, followed by darshan.",
+    "media": [
+      {
+        "type": "photo",
+        "src": "/uploads/events/annakut-2026/01.jpg",
+        "thumb": "/uploads/events/annakut-2026/01-thumb.jpg",
+        "alt": "Wide view of the temple hall with tiered Annakut sweets and savories before the murtis and rows of trays on the floor in front",
+        "caption": "The full Annakut offering to Thakorji"
+      },
+      {
+        "type": "photo",
+        "src": "/uploads/events/annakut-2026/02.jpg",
+        "thumb": "/uploads/events/annakut-2026/02-thumb.jpg",
+        "alt": "Tiered Annakut offering beneath the murtis, with the Shikshapatri Dvishatabdi Mahotsav sign at the center",
+        "caption": "Annakut darshan, Shikshapatri 200"
+      },
+      {
+        "type": "photo",
+        "src": "/uploads/events/annakut-2026/03.jpg",
+        "thumb": "/uploads/events/annakut-2026/03-thumb.jpg",
+        "alt": "Close view of the Shikshapatri 200 sign surrounded by sweets, cupcakes and colorful papad",
+        "caption": "Celebrating 200 years of the Shikshapatri"
+      },
+      {
+        "type": "photo",
+        "src": "/uploads/events/annakut-2026/04.jpg",
+        "thumb": "/uploads/events/annakut-2026/04-thumb.jpg",
+        "alt": "A figure writing the Shikshapatri beside a decorated seat with a life-size saffron-robed cutout, against a painted sky backdrop",
+        "caption": "The Shikshapatri corner"
+      },
+      {
+        "type": "photo",
+        "src": "/uploads/events/annakut-2026/05.jpg",
+        "thumb": "/uploads/events/annakut-2026/05-thumb.jpg",
+        "alt": "Angled view of the Annakut arrangement with trays of food in the foreground and the murtis behind",
+        "caption": "Annakut offering from the side"
+      }
+    ]
   }
 ]
